@@ -11,42 +11,44 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float jumpForce;
 
-    public float PlayerSpeed { get; private set; }
+    public float PlayerVelX { get; private set; }
+    public float PlayerVelY { get; private set; }
 
     private Rigidbody2D rb2d;
     private Animator animator;
     private new SpriteRenderer renderer;
 
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private SpriteRenderer laserRenderer;
+    [SerializeField] private Transform laserTransform;
 
     protected void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         renderer = GetComponent<SpriteRenderer>();
-        PlayerSpeed = 0.0f;
+        PlayerVelX = 0.0f;
     }
 
     protected void Update()
     {
         Move();
         CheckForJump();
+        PlayerVelY = rb2d.velocity.y;
 
-        animator.SetFloat("PlayerVelXAbs", Mathf.Abs(PlayerSpeed));
-        animator.SetFloat("PlayerVelY", rb2d.velocity.y);
+        animator.SetFloat("PlayerVelXAbs", Mathf.Abs(PlayerVelX));
+        animator.SetFloat("PlayerVelY", PlayerVelY);
     }
 
     private void Move()
     {
-        PlayerSpeed = Input.GetAxisRaw("Horizontal") * playerSpeedScalar;
-        if (PlayerSpeed > 0 && renderer.flipX) {
-            renderer.flipX = false;
-            laserRenderer.flipX = false;
+        PlayerVelX = Input.GetAxisRaw("Horizontal") * playerSpeedScalar;
+        if (PlayerVelX > 0 && transform.localScale.x < 0) {
+            transform.localScale = new Vector3(1, 1, 1);
+            laserTransform.localScale = new Vector3(1, 1, 1);
         }
-        else if (PlayerSpeed < 0 && !renderer.flipX) {
-            renderer.flipX = true;
-            laserRenderer.flipX = true;
+        else if (PlayerVelX < 0 && transform.localScale.x > 0) {
+            transform.localScale = new Vector3(-1, 1, 1);
+            laserTransform.localScale = new Vector3(-1, 1, 1);
         }
     }
 

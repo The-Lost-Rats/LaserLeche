@@ -29,7 +29,7 @@ public class PlayController : MonoBehaviour
         foreach (ParallaxObject parallaxObject in parallaxObjects)
         {
             Vector3 playObjPos = parallaxObject.transform.position;
-            playObjPos.x -= playerController.PlayerSpeed / (1 + (distanceScalar * parallaxObject.parallaxDistanceFromForeground));
+            playObjPos.x -= playerController.PlayerVelX / (1 + (distanceScalar * parallaxObject.parallaxDistanceFromForeground));
             if (parallaxObject.looping)
             {
                 if (playObjPos.x >= 16)
