@@ -293,6 +293,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Laser_Blast_9
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 16
+        height: 50
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14023be1d1456424d8857b581e8deaac
+      internalID: -407603688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -311,6 +332,7 @@ TextureImporter:
       Laser_Blast_6: 112969401
       Laser_Blast_2: -1533279910
       Laser_Blast_5: 70620334
+      Laser_Blast_9: -407603688
       Laser_Blast_7: 459003833
       Laser_Blast_8: 2056727052
   spritePackingTag: 
