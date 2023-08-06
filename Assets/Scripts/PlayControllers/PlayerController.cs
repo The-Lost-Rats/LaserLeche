@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     private new SpriteRenderer renderer;
 
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private SpriteRenderer laserRenderer;
 
     protected void Start()
     {
@@ -41,9 +42,11 @@ public class PlayerController : MonoBehaviour
         PlayerSpeed = Input.GetAxisRaw("Horizontal") * playerSpeedScalar;
         if (PlayerSpeed > 0 && renderer.flipX) {
             renderer.flipX = false;
+            laserRenderer.flipX = false;
         }
         else if (PlayerSpeed < 0 && !renderer.flipX) {
             renderer.flipX = true;
+            laserRenderer.flipX = true;
         }
     }
 

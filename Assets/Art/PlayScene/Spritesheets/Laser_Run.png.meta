@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0f13be877d1e79a46b5a2c15aeb1884c
+guid: eecc0d9a8d145e04eb08f79433ab9919
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -105,13 +105,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Leche_Jump_0
+      name: Laser_Run_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 16
-        height: 16
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -119,20 +119,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8fb272dfa5cdd8e41943339f4fec727f
-      internalID: -142118469
+      spriteID: cb74cda32664a2d40812c4d0b9b8d51a
+      internalID: -843777275
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Leche_Jump_1
+      name: Laser_Run_1
       rect:
         serializedVersion: 2
         x: 16
         y: 0
         width: 16
-        height: 16
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -140,20 +140,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0c2d338988f79614995c5e5599e44f43
-      internalID: -1614336156
+      spriteID: 0238ebb6cbbf257409059808b6d0302c
+      internalID: -1136800345
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Leche_Jump_2
+      name: Laser_Run_2
       rect:
         serializedVersion: 2
         x: 32
         y: 0
         width: 16
-        height: 16
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -161,20 +161,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 247c085b9b755994d86815f9cfee3de2
-      internalID: -2043592450
+      spriteID: 931e756cc004d2849aafa8ecda599b45
+      internalID: 663523553
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Leche_Jump_3
+      name: Laser_Run_3
       rect:
         serializedVersion: 2
         x: 48
         y: 0
         width: 16
-        height: 16
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -182,8 +182,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aff646baf4087be449bf3de37bceed3a
-      internalID: -1729230242
+      spriteID: 58a3f3b19c7b4a348b07942541509fd5
+      internalID: -967294972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Laser_Run_4
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 16
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83065bb1a6adeaf45b702527c7f27973
+      internalID: 491977807
       vertices: []
       indices: 
       edges: []
@@ -199,10 +220,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Leche_Jump_3: -1729230242
-      Leche_Jump_0: -142118469
-      Leche_Jump_2: -2043592450
-      Leche_Jump_1: -1614336156
+      Laser_Run_3: -967294972
+      Laser_Run_2: 663523553
+      Laser_Run_4: 491977807
+      Laser_Run_1: -1136800345
+      Laser_Run_0: -843777275
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
