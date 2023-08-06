@@ -16,16 +16,13 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb2d;
     private Animator animator;
-    private new SpriteRenderer renderer;
 
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private Transform laserTransform;
 
     protected void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        renderer = GetComponent<SpriteRenderer>();
         PlayerVelX = 0.0f;
     }
 
@@ -44,11 +41,9 @@ public class PlayerController : MonoBehaviour
         PlayerVelX = Input.GetAxisRaw("Horizontal") * playerSpeedScalar;
         if (PlayerVelX > 0 && transform.localScale.x < 0) {
             transform.localScale = new Vector3(1, 1, 1);
-            laserTransform.localScale = new Vector3(1, 1, 1);
         }
         else if (PlayerVelX < 0 && transform.localScale.x > 0) {
             transform.localScale = new Vector3(-1, 1, 1);
-            laserTransform.localScale = new Vector3(-1, 1, 1);
         }
     }
 
