@@ -12,6 +12,8 @@ public class PlayController : MonoBehaviour
     [Range(0.0f, 2.0f)]
     private float distanceScalar = 1.0f;
 
+    [SerializeField] private GameObject ufoPrefab;
+
     public void Awake() {
         if (!instance)
             instance = this;
@@ -38,6 +40,13 @@ public class PlayController : MonoBehaviour
                     playObjPos.x += 16;
             }
             parallaxObject.transform.position = playObjPos;
+        }
+
+        // TODO Debug code
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            GameObject ufo = Instantiate(ufoPrefab, new Vector3(0, 5), Quaternion.identity);
+            parallaxObjects.Add(ufo.GetComponent<ParallaxObject>());
         }
 	}
 }
