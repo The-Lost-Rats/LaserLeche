@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
-    [Range(0.0f, 0.1f)]
+    [Range(0.0f, 1.0f)]
     private float playerSpeedScalar;
     [Range(1, 20)]
     [SerializeField]
@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
         PlayerVelX = 0.0f;
     }
 
-    protected void Update()
+    protected void FixedUpdate()
     {
         Move();
         CheckForJump();

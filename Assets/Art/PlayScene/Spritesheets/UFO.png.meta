@@ -650,6 +650,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: UFO_26
+      rect:
+        serializedVersion: 2
+        x: 1144
+        y: 0
+        width: 44
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e633477989df4a4bb6f2d598eebed3d
+      internalID: -352841729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -664,6 +685,7 @@ TextureImporter:
       UFO_9: -582562731
       UFO_2: 1519345456
       UFO_22: -102365320
+      UFO_26: -352841729
       UFO_3: 649341758
       UFO_13: -1533648458
       UFO_21: 810445904

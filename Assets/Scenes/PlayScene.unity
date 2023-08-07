@@ -574,6 +574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e75ec2495584d346a592011011afa6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneObjectsParent: {fileID: 948949798}
   playerController: {fileID: 1404165676}
   distanceScalar: 1
   ufoPrefab: {fileID: 15076407267131009, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
@@ -677,6 +678,67 @@ MonoBehaviour:
   relativeSpeed: 0
   parallaxDistanceFromForeground: 7
   looping: 1
+--- !u!1001 &796645618
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 948949798}
+    m_Modifications:
+    - target: {fileID: 15076407267131009, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_Name
+      value: UFO
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.04966431
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.4754357
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 15076407267131037, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
 --- !u!1 &948949797
 GameObject:
   m_ObjectHideFlags: 0
@@ -708,6 +770,7 @@ Transform:
   - {fileID: 328219743}
   - {fileID: 712517799}
   - {fileID: 1404165673}
+  - {fileID: 1315918425}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -911,6 +974,11 @@ MonoBehaviour:
   relativeSpeed: 0
   parallaxDistanceFromForeground: 15
   looping: 1
+--- !u!4 &1315918425 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 15076407267131010, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
+  m_PrefabInstance: {fileID: 796645618}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1404165672
 GameObject:
   m_ObjectHideFlags: 0
@@ -1032,7 +1100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffa95c181a9c71c4fb393b643505529a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpeedScalar: 0.0771
+  playerSpeedScalar: 0.3
   jumpForce: 20
   groundLayer:
     serializedVersion: 2
@@ -1099,7 +1167,7 @@ GameObject:
   - component: {fileID: 1976563137}
   m_Layer: 0
   m_Name: Laser
-  m_TagString: Untagged
+  m_TagString: Laser
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1213,7 +1281,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.25, y: 1.75}

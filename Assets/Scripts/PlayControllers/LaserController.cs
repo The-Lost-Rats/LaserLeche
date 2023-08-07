@@ -16,7 +16,7 @@ public class LaserController : MonoBehaviour
         imFiringMahLazer = false;
     }
 
-    protected void Update()
+    protected void FixedUpdate()
     {
         CheckForLaserBlast();
 

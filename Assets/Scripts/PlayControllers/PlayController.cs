@@ -6,6 +6,7 @@ public class PlayController : MonoBehaviour
 {
     public static PlayController instance = null;
     private List<ParallaxObject> parallaxObjects;
+    [SerializeField] private Transform sceneObjectsParent;
     [SerializeField] private PlayerController playerController;
 
     [SerializeField]
@@ -26,10 +27,17 @@ public class PlayController : MonoBehaviour
         parallaxObjects = new List<ParallaxObject>(GameObject.FindObjectsOfType<ParallaxObject>());
     }
 
-	protected void Update()
+	protected void FixedUpdate()
     {
-        foreach (ParallaxObject parallaxObject in parallaxObjects)
+        for (int i = 0; i < parallaxObjects.Count; i++)
         {
+            ParallaxObject parallaxObject = parallaxObjects[i];
+            if (parallaxObject == null)
+            {
+                parallaxObjects.RemoveAt(i);
+                i--;
+                continue;
+            }
             Vector3 playObjPos = parallaxObject.transform.position;
             playObjPos.x -= playerController.PlayerVelX / (1 + (distanceScalar * parallaxObject.parallaxDistanceFromForeground));
             if (parallaxObject.looping)
@@ -45,7 +53,7 @@ public class PlayController : MonoBehaviour
         // TODO Debug code
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            GameObject ufo = Instantiate(ufoPrefab, new Vector3(0, 5), Quaternion.identity);
+            GameObject ufo = Instantiate(ufoPrefab, new Vector3(0, 5), Quaternion.identity, sceneObjectsParent);
             parallaxObjects.Add(ufo.GetComponent<ParallaxObject>());
         }
 	}

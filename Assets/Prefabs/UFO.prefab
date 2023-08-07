@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 15076407267131037}
   - component: {fileID: 15076407267131036}
   - component: {fileID: 15076407267131011}
+  - component: {fileID: 273558003191886997}
   m_Layer: 0
   m_Name: UFO
   m_TagString: Untagged
@@ -121,6 +122,37 @@ MonoBehaviour:
   relativeSpeed: 0
   parallaxDistanceFromForeground: 1
   looping: 0
+  invulnerabilityLength: 1.5
+  ufoMaxHealth: 5
   enterLength: 1.59
   floatAmplitude: 2
   floatSpeed: 4.06
+  deathLength: 2.01
+  deathSpeed: 0.45
+  deathFadeFrames: 6
+--- !u!61 &273558003191886997
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 15076407267131009}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.125}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 11, y: 8.5}
+    newSize: {x: 11, y: 8.5}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 10.5, y: 6.75}
+  m_EdgeRadius: 0
