@@ -3,6 +3,7 @@ using UnityEngine;
 
 public enum GameState {
     UNKNOWN,
+    INTRO,
     PLAY
 }
 
@@ -33,8 +34,8 @@ public class GameController : MonoBehaviour {
         // This means that only the base scene exists, and we should create the main menu
         if (sceneController.activeScenes.Count == 1)
         {
-            sceneController.LoadScene(Scenes.Play, false);
-            currGameState = GameState.PLAY; // Directly assign because LoadScene takes a sec
+            sceneController.LoadScene(Scenes.Intro, false);
+            currGameState = GameState.INTRO; // Directly assign because LoadScene takes a sec
         }
         else
         {
@@ -54,6 +55,17 @@ public class GameController : MonoBehaviour {
         string nextSceneName = null;
         switch (currGameState)
         {
+            case GameState.INTRO:
+                if (newGameState == GameState.PLAY)
+                {
+                    sceneController.UnloadScene(Scenes.Intro);
+                    nextSceneName = Scenes.Play;
+                }
+                else
+                {
+                    handled = false;
+                }
+                break;
             case GameState.PLAY:
                 handled = false;
                 break;

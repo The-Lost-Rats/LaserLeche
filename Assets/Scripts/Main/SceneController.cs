@@ -4,11 +4,13 @@ using UnityEngine.SceneManagement;
 
 public static class Scenes {
     public const string Base = "BaseScene";
+    public const string Intro = "IntroScene";
     public const string Play = "PlayScene";
 }
 
 public class SceneController : MonoBehaviour {
     private IDictionary<string, GameState> gameSceneStateMapping = new Dictionary<string, GameState>() {
+        {Scenes.Intro, GameState.INTRO},
         {Scenes.Play, GameState.PLAY}
     };
 
