@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,15 +6,28 @@ using UnityEngine;
 public class PlayController : MonoBehaviour
 {
     public static PlayController instance = null;
-    private List<ParallaxObject> parallaxObjects;
+
+    [Header("References")]
     [SerializeField] private Transform sceneObjectsParent;
+    [SerializeField] private Transform backgroundObjectsParent;
+    [SerializeField] private Transform grassObjectsParent;
     [SerializeField] private PlayerController playerController;
 
-    [SerializeField]
-    [Range(0.0f, 2.0f)]
-    private float distanceScalar = 1.0f;
-
+    [Header("Prefabs")]
+    [SerializeField] private GameObject grassPrefab;
     [SerializeField] private GameObject ufoPrefab;
+    [SerializeField] private List<GameObject> backgroundObjPrefabs;
+
+    [Header("Game Settings")]
+    [SerializeField]
+    [Range(50, 300)]
+    private int mapSize = 50;
+    [SerializeField]
+    [Range(4, 32)]
+    private int mapCellSize = 4; // Defined in pixels
+
+    private List<ParallaxObject> parallaxObjects; // Parallax objects will contain all objects to move across the screen
+    private float playerPosX; // Keeps track of where the player would be if they actually moved
 
     public void Awake() {
         if (!instance)
@@ -24,37 +38,66 @@ public class PlayController : MonoBehaviour
 
     protected void Start()
     {
-        parallaxObjects = new List<ParallaxObject>(GameObject.FindObjectsOfType<ParallaxObject>());
+        // Enforce even map size cause I don't want to deal with odd numbers
+        if (mapSize % 2 != 0) mapSize--;
+
+        // Create a grass object for each tile
+        parallaxObjects = new List<ParallaxObject>();
+        for (int i = 0; i < mapSize; i++)
+        {
+            GameObject grassObj = Instantiate(grassPrefab, new Vector2(GetInitXPos(i, 0), 0), Quaternion.identity, grassObjectsParent);
+            GrassController grassController = grassObj.GetComponent<GrassController>();
+            grassController.Init(i, mapCellSize);
+            parallaxObjects.Add(grassController);
+        }
+
+        // Go through all existing background objects (these are the actual looping backgrounds) and add them to the reference list
+        foreach (ParallaxObject existingBackgroundObj in backgroundObjectsParent.GetComponentsInChildren<ParallaxObject>())
+        {
+            parallaxObjects.Add(existingBackgroundObj);
+        }
+        // Go through all extra background prefabs and add them to the screen
+        foreach (GameObject backgroundPrefab in backgroundObjPrefabs)
+        {
+            GameObject backgroundObj = Instantiate(backgroundPrefab, backgroundObjectsParent);
+            ParallaxObject parallaxObj = backgroundObj.GetComponent<ParallaxObject>();
+            backgroundObj.transform.position = new Vector2(GetInitXPos(parallaxObj.mapCellLocation, parallaxObj.parallaxDistance), backgroundObj.transform.position.y);
+            parallaxObjects.Add(parallaxObj);
+        }
+    }
+
+    private float GetInitXPos(int cellLoc, int parallaxDist)
+    {
+        if (cellLoc >= (mapSize / 2)) cellLoc -= mapSize;
+        // Please don't ask me to explain this function, it took me so freaking long to figure out
+        return ((Constants.PIXELS_PER_UNIT * cellLoc) / Mathf.Pow(2, parallaxDist)) + (Constants.PIXELS_PER_UNIT / Mathf.Pow(2, parallaxDist + 1));
     }
 
 	protected void FixedUpdate()
     {
+        playerPosX += playerController.PlayerVelX;
+
         for (int i = 0; i < parallaxObjects.Count; i++)
         {
-            ParallaxObject parallaxObject = parallaxObjects[i];
-            if (parallaxObject == null)
-            {
-                parallaxObjects.RemoveAt(i);
-                i--;
-                continue;
-            }
-            Vector3 playObjPos = parallaxObject.transform.position;
-            playObjPos.x -= playerController.PlayerVelX / (1 + (distanceScalar * parallaxObject.parallaxDistanceFromForeground));
-            if (parallaxObject.looping)
-            {
-                if (playObjPos.x >= 16)
-                    playObjPos.x -= 16;
-                else if (playObjPos.x <= -16)
-                    playObjPos.x += 16;
-            }
-            parallaxObject.transform.position = playObjPos;
+            parallaxObjects[i].Move(playerController.PlayerVelX);
         }
 
         // TODO Debug code
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            GameObject ufo = Instantiate(ufoPrefab, new Vector3(0, 5), Quaternion.identity, sceneObjectsParent);
+            GameObject ufo = Instantiate(ufoPrefab, sceneObjectsParent);
             parallaxObjects.Add(ufo.GetComponent<ParallaxObject>());
         }
 	}
+
+    // Not sure if we'll ever need this, but leaving it here just in case
+    private int GetCurrMapCell()
+    {
+        return (int)Mathf.Floor(playerPosX * Constants.PIXELS_PER_UNIT / mapCellSize);
+    }
+
+    public int GetScreenBoundsForDistance(int parallaxDist)
+    {
+        return Mathf.CeilToInt((Constants.PIXELS_PER_UNIT * (mapSize / 2)) / Mathf.Pow(2, parallaxDist));
+    }
 }

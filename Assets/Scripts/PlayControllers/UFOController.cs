@@ -44,7 +44,6 @@ public class UFOController : ParallaxObject
     private int deathFadeFrames = 1;
 
     private Animator animator;
-    private new SpriteRenderer renderer;
 
     private float initYPos;
     private UFOState ufoState;
@@ -56,10 +55,9 @@ public class UFOController : ParallaxObject
     private float deathStartTime;
     private int lastDeathFadeFrame;
 
-    protected void Start()
+    protected override void OnStart()
     {
         animator = GetComponent<Animator>();
-        renderer = GetComponent<SpriteRenderer>();
 
         initYPos = transform.position.y;
         ufoHealth = ufoMaxHealth;
