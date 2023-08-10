@@ -20,9 +20,7 @@ public class ParallaxObject : MonoBehaviour
     [HideInInspector]
     public float relativeSpeed; // TODO Add in relative speed logic
 
-    [SerializeField]
     private int objBounds;
-    [SerializeField]
     private bool realLoop; // If true, loop by subtracting/adding the loop amount rather than setting it
 
     protected new SpriteRenderer renderer;

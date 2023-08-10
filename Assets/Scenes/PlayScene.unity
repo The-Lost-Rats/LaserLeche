@@ -224,8 +224,6 @@ MonoBehaviour:
   mapCellLocation: 0
   looping: 1
   relativeSpeed: 0
-  objBounds: 0
-  realLoop: 0
 --- !u!1 &328219742
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,8 +361,6 @@ MonoBehaviour:
   mapCellLocation: 0
   looping: 1
   relativeSpeed: 0
-  objBounds: 0
-  realLoop: 0
 --- !u!1 &703254425
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,7 +456,8 @@ MonoBehaviour:
   grassPrefab: {fileID: 7171268807813946903, guid: 2061dd73223e12d469c5efada9441bfa, type: 3}
   ufoPrefab: {fileID: 15076407267131009, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
   backgroundObjPrefabs:
-  - {fileID: 4177586992603226954, guid: bccc2bc042d04614290185fbb401ba36, type: 3}
+  - {fileID: 5464573287658001508, guid: 8856ddb0499ba2847ae0990ffb63c0a7, type: 3}
+  - {fileID: 6039880371007187031, guid: bba5fe503355e8f42bc7989310e10e6d, type: 3}
   mapSize: 100
   mapCellSize: 16
 --- !u!1 &765503417
@@ -564,8 +561,6 @@ MonoBehaviour:
   mapCellLocation: 0
   looping: 1
   relativeSpeed: 0
-  objBounds: 0
-  realLoop: 0
 --- !u!1 &777793400
 GameObject:
   m_ObjectHideFlags: 0
@@ -806,8 +801,6 @@ MonoBehaviour:
   mapCellLocation: 0
   looping: 1
   relativeSpeed: 0
-  objBounds: 0
-  realLoop: 0
 --- !u!1 &1007335938
 GameObject:
   m_ObjectHideFlags: 0
@@ -940,8 +933,6 @@ MonoBehaviour:
   mapCellLocation: 0
   looping: 1
   relativeSpeed: 0
-  objBounds: 0
-  realLoop: 0
 --- !u!1 &1404165672
 GameObject:
   m_ObjectHideFlags: 0
