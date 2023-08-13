@@ -416,7 +416,7 @@ GameObject:
   - component: {fileID: 729258507}
   - component: {fileID: 729258508}
   m_Layer: 0
-  m_Name: PlayController
+  m_Name: ParallaxController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

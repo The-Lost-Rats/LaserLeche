@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayController : MonoBehaviour
+public class ParallaxController : MonoBehaviour
 {
-    public static PlayController instance = null;
+    public static ParallaxController instance = null;
 
     [Header("References")]
     [SerializeField] private Transform sceneObjectsParent;

@@ -38,7 +38,7 @@ public class ParallaxObject : MonoBehaviour
         }
         else
         {
-            int parallaxBounds = PlayController.instance.GetScreenBoundsForDistance(parallaxDistance);
+            int parallaxBounds = ParallaxController.instance.GetScreenBoundsForDistance(parallaxDistance);
             int screenBounds = Constants.SCREEN_BOUNDS + (int)Mathf.Ceil(renderer.size.x / 2);
             realLoop = parallaxBounds > screenBounds;
             objBounds = realLoop ? parallaxBounds : screenBounds;
