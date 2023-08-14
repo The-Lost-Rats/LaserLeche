@@ -179,7 +179,7 @@ MonoBehaviour:
   startLength: 0.5
   backgroundUFOSpawnTime: 0.3
   beginTextSprite: {fileID: 21300000, guid: 077564faa9e19cb439f81d9b75ba77f7, type: 3}
-  waveCompleteTextSprite: {fileID: 21300000, guid: a8b32ed565c1a0640a07152030267162, type: 3}
+  waveCompleteTextSprite: {fileID: 21300000, guid: ecdb119b6e8df544dabdcde58b7a09ad, type: 3}
 --- !u!1 &265990156
 GameObject:
   m_ObjectHideFlags: 0
