@@ -63,7 +63,7 @@ public class ParallaxObject : MonoBehaviour
         if (!initialized) return;
 
         Vector2 pos = transform.position;
-        pos.x -= xDiff / (1 + (Constants.PARALLAX_DISTANCE_SCALE_FACTOR * parallaxDistance));
+        pos.x -= xDiff / Mathf.Pow(2, parallaxDistance);
         // Handle bounds
         if (pos.x > objBounds)
         {

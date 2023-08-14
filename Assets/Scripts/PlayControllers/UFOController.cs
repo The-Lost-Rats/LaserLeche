@@ -8,7 +8,8 @@ public class UFOController : ParallaxObject
     {
         ENTERING,
         IDLE,
-        DEATH
+        DEATH,
+        DEAD
     }
 
     [Header("UFO Variables")]
@@ -67,6 +68,12 @@ public class UFOController : ParallaxObject
         enterStartTime = Time.time;
     }
 
+    // TODO Add in more info on how the UFO works
+    public void Init(int startingCell)
+    {
+        mapCellLocation = startingCell;
+    }
+
     protected void Update()
     {
         switch (ufoState)
@@ -83,6 +90,12 @@ public class UFOController : ParallaxObject
                     ufoState = UFOState.IDLE;
                     idleFloatStartTime = Time.time;
                 }
+                break;
+            }
+            case UFOState.IDLE:
+            {
+                float newY = initYPos + (Mathf.Sin((Time.time - idleFloatStartTime) * floatSpeed) * (floatAmplitude / 8.0f)) - (floatAmplitude % 2 == 0 ? 0.0f : 0.125f);
+                SetYPosition(newY);
                 break;
             }
             case UFOState.DEATH:
@@ -102,15 +115,8 @@ public class UFOController : ParallaxObject
                 }
                 else
                 {
-                    GameObject.Destroy(this.gameObject);
+                    ufoState = UFOState.DEAD;
                 }
-                break;
-            }
-            case UFOState.IDLE:
-            default:
-            {
-                float newY = initYPos + (Mathf.Sin((Time.time - idleFloatStartTime) * floatSpeed) * (floatAmplitude / 8.0f)) - (floatAmplitude % 2 == 0 ? 0.0f : 0.125f);
-                SetYPosition(newY);
                 break;
             }
         }
@@ -139,6 +145,11 @@ public class UFOController : ParallaxObject
                 }
             }
         }
+    }
+
+    public bool IsDead()
+    {
+        return ufoState == UFOState.DEAD;
     }
 
     private void DisableHitAnimation()

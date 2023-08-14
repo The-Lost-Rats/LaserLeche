@@ -8,14 +8,12 @@ public class ParallaxController : MonoBehaviour
     public static ParallaxController instance = null;
 
     [Header("References")]
-    [SerializeField] private Transform sceneObjectsParent;
     [SerializeField] private Transform backgroundObjectsParent;
     [SerializeField] private Transform grassObjectsParent;
     [SerializeField] private PlayerController playerController;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject grassPrefab;
-    [SerializeField] private GameObject ufoPrefab;
     [SerializeField] private List<GameObject> backgroundObjPrefabs;
 
     [Header("Game Settings")]
@@ -40,6 +38,8 @@ public class ParallaxController : MonoBehaviour
     {
         // Enforce even map size cause I don't want to deal with odd numbers
         if (mapSize % 2 != 0) mapSize--;
+
+        playerPosX = 0;
 
         // Create a grass object for each tile
         parallaxObjects = new List<ParallaxObject>();
@@ -66,27 +66,34 @@ public class ParallaxController : MonoBehaviour
         }
     }
 
-    private float GetInitXPos(int cellLoc, int parallaxDist)
+    public void RegisterNewParallaxObj(ParallaxObject parallaxObj)
+    {
+        parallaxObjects.Add(parallaxObj);
+    }
+
+    public float GetInitXPos(int cellLoc, int parallaxDist)
     {
         if (cellLoc >= (mapSize / 2)) cellLoc -= mapSize;
-        // Please don't ask me to explain this function, it took me so freaking long to figure out
-        return ((Constants.PIXELS_PER_UNIT * cellLoc) / Mathf.Pow(2, parallaxDist)) + (Constants.PIXELS_PER_UNIT / Mathf.Pow(2, parallaxDist + 1));
+        float startingRawXPos = (Constants.PIXELS_PER_UNIT * cellLoc) + (Constants.PIXELS_PER_UNIT / 2) - playerPosX;
+        return startingRawXPos / Mathf.Pow(2, parallaxDist);
     }
 
 	protected void FixedUpdate()
     {
         playerPosX += playerController.PlayerVelX;
+        if (playerPosX > Constants.PIXELS_PER_UNIT * (mapSize / 2)) playerPosX -= Constants.PIXELS_PER_UNIT * mapSize;
+        if (playerPosX < -Constants.PIXELS_PER_UNIT * (mapSize / 2)) playerPosX += Constants.PIXELS_PER_UNIT * mapSize;
 
-        for (int i = 0; i < parallaxObjects.Count; i++)
+        for (int i = parallaxObjects.Count - 1; i >= 0; i--)
         {
-            parallaxObjects[i].Move(playerController.PlayerVelX);
-        }
-
-        // TODO Debug code
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            GameObject ufo = Instantiate(ufoPrefab, sceneObjectsParent);
-            parallaxObjects.Add(ufo.GetComponent<ParallaxObject>());
+            if (parallaxObjects[i] != null)
+            {
+                parallaxObjects[i].Move(playerController.PlayerVelX);
+            }
+            else
+            {
+                parallaxObjects.RemoveAt(i);
+            }
         }
 	}
 
@@ -99,5 +106,10 @@ public class ParallaxController : MonoBehaviour
     public int GetScreenBoundsForDistance(int parallaxDist)
     {
         return Mathf.CeilToInt((Constants.PIXELS_PER_UNIT * (mapSize / 2)) / Mathf.Pow(2, parallaxDist));
+    }
+
+    public int GetMapSize()
+    {
+        return mapSize;
     }
 }
