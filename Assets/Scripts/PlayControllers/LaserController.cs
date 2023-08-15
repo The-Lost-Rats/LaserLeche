@@ -22,7 +22,7 @@ public class LaserController : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        if (!PlayController.instance.IsGameOver())
+        if (!PlayController.instance.IsGameOver() && !PlayController.instance.IsGameWon())
         {
             CheckForLaserBlast();
         }

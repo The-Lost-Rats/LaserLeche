@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour {
 
     // HEH HEH THIS IS SO MESSY BUT I HAVE 3 HOURS AND IT'S 1 AM AND I DON'T CARE ANYMORE
     public int level = 0;
+    public bool gameWon = false;
 
     [SerializeField] private SceneController sceneController;
 
@@ -73,6 +74,11 @@ public class GameController : MonoBehaviour {
                 {
                     sceneController.UnloadScene(Scenes.Play);
                     nextSceneName = Scenes.Play;
+                }
+                else if (newGameState == GameState.INTRO)
+                {
+                    sceneController.UnloadScene(Scenes.Play);
+                    nextSceneName = Scenes.Intro;
                 }
                 else
                 {

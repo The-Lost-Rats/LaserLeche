@@ -15,7 +15,9 @@ public class PlayController : MonoBehaviour
         BEGIN_TEXT = 3,
         GAMEPLAY = 4,
         WAVE_COMPLETE = 5,
-        GAME_OVER = 6
+        GAME_WON_A = 6,
+        GAME_WON_B = 7,
+        GAME_OVER = 8
     }
 
     [Header("Game Data")]
@@ -38,6 +40,7 @@ public class PlayController : MonoBehaviour
     [SerializeField] [Range(0.0f, 1.0f)] private float backgroundUFOSpawnTime = 0.0f;
     [SerializeField] private Sprite beginTextSprite;
     [SerializeField] private Sprite waveCompleteTextSprite;
+    [SerializeField] private Sprite gameWonTextSprite;
 
     [Header("UFO Arrow")]
     [SerializeField] private SpriteRenderer leftUFOArrow;
@@ -165,12 +168,25 @@ public class PlayController : MonoBehaviour
                     }
                     if (numUFOsDestroyed >= numUFOs)
                     {
-                        AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.NextWave);
-                        GameObject waveCompleteText = Instantiate(basicUIText, uiParent);
-                        SpriteRenderer sr = waveCompleteText.GetComponent<SpriteRenderer>();
-                        sr.sprite = waveCompleteTextSprite;
-                        currAnimator = waveCompleteText.GetComponent<Animator>();
-                        state = PlayState.WAVE_COMPLETE;
+                        if (currLevel < (levelDatas.Count - 1))
+                        {
+                            AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.NextWave);
+                            GameObject waveCompleteText = Instantiate(basicUIText, uiParent);
+                            SpriteRenderer sr = waveCompleteText.GetComponent<SpriteRenderer>();
+                            sr.sprite = waveCompleteTextSprite;
+                            currAnimator = waveCompleteText.GetComponent<Animator>();
+                            state = PlayState.WAVE_COMPLETE;
+                        }
+                        else
+                        {
+                            FadeOutMusic();
+                            AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.GameWin);
+                            GameObject gameWonText = Instantiate(basicUIText, uiParent);
+                            SpriteRenderer sr = gameWonText.GetComponent<SpriteRenderer>();
+                            sr.sprite = gameWonTextSprite;
+                            currAnimator = gameWonText.GetComponent<Animator>();
+                            state = PlayState.GAME_WON_A;
+                        }
                     }
                     break;
                 }
@@ -180,17 +196,30 @@ public class PlayController : MonoBehaviour
                     {
                         Destroy(currAnimator.gameObject);
                         currAnimator = null;
-                        if (currLevel < (levelDatas.Count - 1))
-                        {
-                            currLevel++;
-                            stateTimer = Time.fixedTime;
-                            state = PlayState.START;
-                        }
-                        else
-                        {
-                            // TODO
-                            Debug.Log("GAME WIN!");
-                        }
+                        currLevel++;
+                        stateTimer = Time.fixedTime;
+                        state = PlayState.START;
+                    }
+                    break;
+                }
+            case PlayState.GAME_WON_A:
+                {
+                    if (!AudioController.Instance.OneShotAudioPlaying(SoundEffectKeys.GameWin))
+                    {
+                        overlay.SetActive(true);
+                        currAnimator = overlay.GetComponent<Animator>();
+                        currAnimator.SetBool("OverlayIn", true);
+                        state = PlayState.GAME_WON_B;
+                    }
+                    break;
+                }
+            case PlayState.GAME_WON_B:
+                {
+                    if (currAnimator && currAnimator.GetCurrentAnimatorStateInfo(0).IsName("Overlay_In"))
+                    {
+                        GameController.instance.level = 0;
+                        GameController.instance.gameWon = true;
+                        GameController.instance.ChangeState(GameState.INTRO);
                     }
                     break;
                 }
@@ -330,6 +359,11 @@ public class PlayController : MonoBehaviour
         return state == PlayState.GAME_OVER;
     }
 
+    public bool IsGameWon()
+    {
+        return state == PlayState.GAME_WON_A || state == PlayState.GAME_WON_B;
+    }
+
     public void GameOver()
     {
         state = PlayState.GAME_OVER;
@@ -355,6 +389,19 @@ public class PlayController : MonoBehaviour
         if (c.a < 1)
         {
             Invoke("FadeInTapToContinue", 0.33f);
+        }
+    }
+
+    private void FadeOutMusic()
+    {
+        float newVolume = AudioController.Instance.AdjustMusicVolume(-0.05f);
+        if (newVolume > 0.01f)
+        {
+            Invoke("FadeOutMusic", 0.1f);
+        }
+        else
+        {
+            AudioController.Instance.StopMusic();
         }
     }
 }

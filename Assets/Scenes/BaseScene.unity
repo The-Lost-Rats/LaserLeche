@@ -182,6 +182,9 @@ MonoBehaviour:
   - audioClip: {fileID: 8300000, guid: 84d37c90670af0c408ec24b1bd018c5b, type: 3}
     volume: 1
     audioName: 
+  - audioClip: {fileID: 8300000, guid: f2cb21cca79d09141a8764765e5712fe, type: 3}
+    volume: 1
+    audioName: 
   musicClipsList:
   - audioClip: {fileID: 8300000, guid: 89c5e87a119cffd4e8b4cd51eb8d50c0, type: 3}
     volume: 1.2
@@ -278,6 +281,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level: 0
+  gameWon: 0
   sceneController: {fileID: 1429394839}
 --- !u!4 &1659130461
 Transform:

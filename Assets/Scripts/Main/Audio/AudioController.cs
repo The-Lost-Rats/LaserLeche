@@ -13,6 +13,7 @@ public static class SoundEffectKeys
     public const string UFODestruction = "ufo destruction";
     public const string UFOHit = "ufo ship damage";
     public const string LecheLaser = "Leche_Laser_Beam";
+    public const string GameWin = "Game_win";
 }
 
 public static class MusicKeys

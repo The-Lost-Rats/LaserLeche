@@ -62,12 +62,7 @@ public class PlayerController : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        if (playerHealth > 0)
-        {
-            Move();
-            CheckForJump();
-        }
-        else
+        if (PlayController.instance.IsGameOver())
         {
             PlayerVelX = 0;
             if (Time.fixedTime - lastInvulnerabilityBlinkTime > invulnerabilityBlinkLength && !invulnerabilityMaterialWhite)
@@ -85,6 +80,11 @@ public class PlayerController : MonoBehaviour
                     playedExplosionSoundEffect = true;
                 }
             }
+        }
+        else if (!PlayController.instance.IsGameWon())
+        {
+            Move();
+            CheckForJump();
         }
         PlayerVelY = rb2d.velocity.y;
 
