@@ -33,11 +33,26 @@ public class PlayController : MonoBehaviour
     [SerializeField] private Sprite beginTextSprite;
     [SerializeField] private Sprite waveCompleteTextSprite;
 
+    [Header("UFO Arrow")]
+    [SerializeField] private SpriteRenderer leftUFOArrow;
+    [SerializeField] private SpriteRenderer rightUFOArrow;
+    [SerializeField] private List<Sprite> ufoArrowSprites;
+    [SerializeField] [Range(0.1f, 2.0f)] private float ufoArrowBlinkRate = 0.1f;
+
     private PlayState state;
 
     private int currLevel;
     private float stateTimer;
     private int numUFOsDestroyed;
+    
+    private enum ArrowState
+    {
+        HIDDEN,
+        LEFT_UFO,
+        RIGHT_UFO
+    }
+    private ArrowState currArrowState;
+    private float lastArrowUpdateTime;
 
     private Animator currAnimator;
     private BackgroundUFOController[] backgroundUFOs;
@@ -48,6 +63,7 @@ public class PlayController : MonoBehaviour
         state = PlayState.START;
         stateTimer = Time.fixedTime;
         currLevel = 0;
+        currArrowState = ArrowState.HIDDEN;
 
         // Invoke("TestUFO", 0.5f);
     }
@@ -156,6 +172,58 @@ public class PlayController : MonoBehaviour
                     }
                     break;
                 }
+        }
+
+        UpdateArrow();
+    }
+
+    private void UpdateArrow()
+    {
+        ArrowState nextArrowState = state == PlayState.GAMEPLAY ? GetClosestUFO() : ArrowState.HIDDEN;
+
+        if (currArrowState != nextArrowState)
+        {
+            if (currArrowState == ArrowState.LEFT_UFO)
+                leftUFOArrow.gameObject.SetActive(false);
+            else
+                rightUFOArrow.gameObject.SetActive(false);
+            
+            if (nextArrowState == ArrowState.LEFT_UFO)
+                leftUFOArrow.gameObject.SetActive(true);
+            else if (nextArrowState == ArrowState.RIGHT_UFO)
+                rightUFOArrow.gameObject.SetActive(true);
+            currArrowState = nextArrowState;
+        }
+
+        if (currArrowState != ArrowState.HIDDEN && Time.fixedTime - lastArrowUpdateTime > ufoArrowBlinkRate)
+        {
+            SpriteRenderer arrowSpriteRenderer = currArrowState == ArrowState.LEFT_UFO ? leftUFOArrow : rightUFOArrow;
+            arrowSpriteRenderer.sprite = ufoArrowSprites[arrowSpriteRenderer.sprite.name == ufoArrowSprites[0].name ? 1 : 0];
+            lastArrowUpdateTime = Time.fixedTime;
+        }
+    }
+
+    private ArrowState GetClosestUFO()
+    {
+        bool noUFOsSpawned = true;
+        float closestUFOX = 0;
+        foreach (UFOController ufoController in spawnedUFOs)
+        {
+            if (ufoController)
+            {
+                float ufoX = ufoController.gameObject.transform.position.x;
+                if (noUFOsSpawned || Mathf.Abs(ufoX) < Mathf.Abs(closestUFOX))
+                    closestUFOX = ufoX;
+                noUFOsSpawned = false;
+            }
+        }
+        if (noUFOsSpawned)
+            return ArrowState.HIDDEN;
+        else
+        {
+            if (Mathf.Abs(closestUFOX) <= Constants.SCREEN_BOUNDS)
+                return ArrowState.HIDDEN;
+            return closestUFOX < 0 ? ArrowState.LEFT_UFO : ArrowState.RIGHT_UFO;
         }
     }
 
