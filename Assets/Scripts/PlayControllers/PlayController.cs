@@ -79,6 +79,11 @@ public class PlayController : MonoBehaviour
         currLevel = GameController.instance.level;
         currArrowState = ArrowState.HIDDEN;
 
+        if (!AudioController.Instance.IsMusicPlaying())
+        {
+            AudioController.Instance.PlayMusic(MusicKeys.GameMusic);
+        }
+
         // Invoke("TestUFO", 0.5f);
     }
 
@@ -103,6 +108,7 @@ public class PlayController : MonoBehaviour
                     sr.sprite = levelDatas[currLevel].waveNumImage;
                     currAnimator = waveText.GetComponent<Animator>();
                     state = PlayState.WAVE_TEXT;
+                    AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.NextWave);
                 }
                 break;
             case PlayState.WAVE_TEXT:
@@ -121,6 +127,7 @@ public class PlayController : MonoBehaviour
             case PlayState.BACKGROUND_UFO_SPAWN:
                 if (backgroundUFOs[^1] != null && backgroundUFOs[^1].IsIdling())
                 {
+                    AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.NextWave);
                     GameObject beginText = Instantiate(basicUIText, uiParent);
                     SpriteRenderer sr = beginText.GetComponent<SpriteRenderer>();
                     sr.sprite = beginTextSprite;
@@ -158,6 +165,7 @@ public class PlayController : MonoBehaviour
                     }
                     if (numUFOsDestroyed >= numUFOs)
                     {
+                        AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.NextWave);
                         GameObject waveCompleteText = Instantiate(basicUIText, uiParent);
                         SpriteRenderer sr = waveCompleteText.GetComponent<SpriteRenderer>();
                         sr.sprite = waveCompleteTextSprite;
@@ -190,6 +198,7 @@ public class PlayController : MonoBehaviour
                 {
                     if (tapToContinueRenderer.gameObject.activeSelf && tapToContinueRenderer.color.a >= 0.99f && Input.anyKey)
                     {
+                        AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.Button);
                         GameController.instance.level = currLevel;
                         GameController.instance.ChangeState(GameState.PLAY);
                     }
@@ -324,6 +333,8 @@ public class PlayController : MonoBehaviour
     public void GameOver()
     {
         state = PlayState.GAME_OVER;
+        AudioController.Instance.StopAllOneShotAudio();
+        AudioController.Instance.StopMusic();
         overlay.SetActive(true);
         overlay.GetComponent<Animator>().SetBool("OverlayIn", true);
         Invoke("FadeInTapToContinue", 2.5f);

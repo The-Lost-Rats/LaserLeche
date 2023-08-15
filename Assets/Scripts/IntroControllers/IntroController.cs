@@ -17,11 +17,14 @@ public class IntroController : MonoBehaviour
     [SerializeField] private Animator lecheAnimator;
     [SerializeField] private Animator overlayAnimator;
 
+    private bool startedPlayingGameMusic = false;
+
     private IntroState state;
 
     protected void Start()
     {
         state = IntroState.LOADING;
+        AudioController.Instance.PlayMusic(MusicKeys.IntroMusic);
     }
 
     protected void Update()
@@ -37,6 +40,7 @@ public class IntroController : MonoBehaviour
             case IntroState.WAITING_FOR_INPUT:
                 if (Input.anyKey)
                 {
+                    AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.Button);
                     state = IntroState.FADE_OUT_LOGO;
                 }
                 break;
@@ -45,10 +49,16 @@ public class IntroController : MonoBehaviour
                 {
                     Destroy(logoAnimator.gameObject);
                     logoAnimator = null;
+                    SwitchMusic();
                     state = IntroState.LECHE_ANIM;
                 }
                 break;
             case IntroState.LECHE_ANIM:
+                if (lecheAnimator.GetCurrentAnimatorStateInfo(0).IsName("Leche_Stands") && !startedPlayingGameMusic)
+                {
+                    AudioController.Instance.PlayMusic(MusicKeys.GameMusic);
+                    startedPlayingGameMusic = true;
+                }
                 if (lecheAnimator.GetCurrentAnimatorStateInfo(0).IsName("Leche_Gone"))
                 {
                     overlayAnimator.gameObject.SetActive(true);
@@ -65,5 +75,14 @@ public class IntroController : MonoBehaviour
 
         if (logoAnimator) logoAnimator.SetInteger("IntroState", (int)state);
         if (lecheAnimator) lecheAnimator.SetInteger("IntroState", (int)state);
+    }
+
+    private void SwitchMusic()
+    {
+        float newVolume = AudioController.Instance.AdjustMusicVolume(-0.005f);
+        if (newVolume > 0.01f)
+        {
+            Invoke("SwitchMusic", 0.1f);
+        }
     }
 }

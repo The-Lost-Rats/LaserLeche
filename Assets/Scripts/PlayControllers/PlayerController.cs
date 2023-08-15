@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
     private float lastInvulnerabilityBlinkTime;
     private bool invulnerabilityMaterialWhite;
     private float explodeStartTime;
+    private bool playedExplosionSoundEffect;
 
     protected void Start()
     {
@@ -78,6 +79,11 @@ public class PlayerController : MonoBehaviour
             {
                 laserController.gameObject.SetActive(false);
                 animator.SetBool("PlayerExplode", true);
+                if (!playedExplosionSoundEffect)
+                {
+                    AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.LecheExplodes);
+                    playedExplosionSoundEffect = true;
+                }
             }
         }
         PlayerVelY = rb2d.velocity.y;
@@ -109,6 +115,8 @@ public class PlayerController : MonoBehaviour
         {
             if (IsOnGround()) {
                 rb2d.velocity = new Vector2(0, jumpForce);
+                if (!AudioController.Instance.OneShotAudioPlaying(SoundEffectKeys.Jump))
+                    AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.Jump);
             }
         }
     }
@@ -178,6 +186,7 @@ public class PlayerController : MonoBehaviour
         invulnerabilityMaterialWhite = true;
         if (playerHealth > 0)
         {
+            AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.LecheHurt);
             playerHeart.SetActive(true);
             Invoke("TurnOffInvulnerability", invulnerabilityLength);
         }

@@ -92,6 +92,8 @@ public class UFOController : ParallaxObject
     private float stateStartTime;
     private int lastDeathFadeFrame;
 
+    private int laserSoundEffectId = -1;
+
     protected override void OnStart()
     {
         animator = GetComponent<Animator>();
@@ -215,6 +217,8 @@ public class UFOController : ParallaxObject
                 }
                 break;
             case UFOState.LASER:
+                if (laserSoundEffectId >= 0) AudioController.Instance.StopOneShotAudio(laserSoundEffectId);
+                laserSoundEffectId = -1;
                 ufoLaser.SetActive(false);
                 lastLaserTime = Time.time;
                 break;
@@ -232,6 +236,7 @@ public class UFOController : ParallaxObject
                     UpdateMovementState(true);
                 break;
             case UFOState.LASER:
+                if (Mathf.Abs(transform.position.x) <= Constants.SCREEN_BOUNDS) laserSoundEffectId = AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.UFOBeam);
                 ufoLaser.SetActive(true);
                 break;
             case UFOState.DEATH:
@@ -296,6 +301,7 @@ public class UFOController : ParallaxObject
         ufoInvulnerable = true;
         if (ufoHealth > 0)
         {
+            AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.UFOHit);
             animator.SetBool("UFOHit", true);
             Invoke("DisableHitAnimation", 0.1f);
             Invoke("TurnOffInvulnerability", invulnerabilityLength);
@@ -303,6 +309,7 @@ public class UFOController : ParallaxObject
         }
         else
         {
+            AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.UFODestruction);
             SetState(UFOState.DEATH);
         }
     }
