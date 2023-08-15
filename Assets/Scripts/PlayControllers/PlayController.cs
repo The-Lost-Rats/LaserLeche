@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayController : MonoBehaviour
 {
+    public static PlayController instance = null;
+
     private enum PlayState
     {
         START = 0,
@@ -11,7 +14,8 @@ public class PlayController : MonoBehaviour
         BACKGROUND_UFO_SPAWN = 2,
         BEGIN_TEXT = 3,
         GAMEPLAY = 4,
-        WAVE_COMPLETE = 5
+        WAVE_COMPLETE = 5,
+        GAME_OVER = 6
     }
 
     [Header("Game Data")]
@@ -21,6 +25,8 @@ public class PlayController : MonoBehaviour
     [SerializeField] private Transform uiParent;
     [SerializeField] private Transform backgroundObjectsParent;
     [SerializeField] private Transform sceneObjectsParent;
+    [SerializeField] private GameObject overlay;
+    [SerializeField] private SpriteRenderer tapToContinueRenderer;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject basicUIText;
@@ -58,14 +64,22 @@ public class PlayController : MonoBehaviour
     private BackgroundUFOController[] backgroundUFOs;
     private UFOController[] spawnedUFOs;
 
+    public void Awake()
+    {
+        if (!instance)
+            instance = this;
+        else
+            Destroy(gameObject);
+    }
+
     protected void Start()
     {
         state = PlayState.START;
         stateTimer = Time.fixedTime;
-        currLevel = 0;
+        currLevel = GameController.instance.level;
         currArrowState = ArrowState.HIDDEN;
 
-        Invoke("TestUFO", 0.5f);
+        // Invoke("TestUFO", 0.5f);
     }
 
     private void TestUFO()
@@ -79,7 +93,6 @@ public class PlayController : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        return;
         switch (state)
         {
             case PlayState.START:
@@ -170,6 +183,15 @@ public class PlayController : MonoBehaviour
                             // TODO
                             Debug.Log("GAME WIN!");
                         }
+                    }
+                    break;
+                }
+            case PlayState.GAME_OVER:
+                {
+                    if (tapToContinueRenderer.gameObject.activeSelf && tapToContinueRenderer.color.a >= 0.99f && Input.anyKey)
+                    {
+                        GameController.instance.level = currLevel;
+                        GameController.instance.ChangeState(GameState.PLAY);
                     }
                     break;
                 }
@@ -292,5 +314,36 @@ public class PlayController : MonoBehaviour
 
         Destroy(backgroundUFOs[ufoNum].gameObject);
         backgroundUFOs[ufoNum] = null;
+    }
+
+    public bool IsGameOver()
+    {
+        return state == PlayState.GAME_OVER;
+    }
+
+    public void GameOver()
+    {
+        state = PlayState.GAME_OVER;
+        overlay.SetActive(true);
+        overlay.GetComponent<Animator>().SetBool("OverlayIn", true);
+        Invoke("FadeInTapToContinue", 2.5f);
+    }
+
+    private void FadeInTapToContinue()
+    {
+        if (!tapToContinueRenderer.gameObject.activeSelf)
+        {
+            tapToContinueRenderer.gameObject.SetActive(true);
+            Color startingColor = tapToContinueRenderer.color;
+            startingColor.a = 0;
+            tapToContinueRenderer.color = startingColor;
+        }
+        Color c = tapToContinueRenderer.color;
+        c.a += 0.33f;
+        tapToContinueRenderer.color = c;
+        if (c.a < 1)
+        {
+            Invoke("FadeInTapToContinue", 0.33f);
+        }
     }
 }

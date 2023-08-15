@@ -10,6 +10,9 @@ public enum GameState {
 public class GameController : MonoBehaviour {
     public static GameController instance = null;
 
+    // HEH HEH THIS IS SO MESSY BUT I HAVE 3 HOURS AND IT'S 1 AM AND I DON'T CARE ANYMORE
+    public int level = 0;
+
     [SerializeField] private SceneController sceneController;
 
     public GameState currGameState { get; private set; }
@@ -45,12 +48,11 @@ public class GameController : MonoBehaviour {
 
     public void ChangeState(GameState newGameState)
     {
-        if (newGameState == currGameState)
-        {
-            Debug.Log($"Tried to change game state but already {currGameState}");
-            return;
-        }
-        // TODO Create state machine chart showing states
+        // if (newGameState == currGameState)
+        // {
+        //     Debug.Log($"Tried to change game state but already {currGameState}");
+        //     return;
+        // }
         bool handled = true;
         string nextSceneName = null;
         switch (currGameState)
@@ -67,7 +69,15 @@ public class GameController : MonoBehaviour {
                 }
                 break;
             case GameState.PLAY:
-                handled = false;
+                if (newGameState == GameState.PLAY)
+                {
+                    sceneController.UnloadScene(Scenes.Play);
+                    nextSceneName = Scenes.Play;
+                }
+                else
+                {
+                    handled = false;
+                }
                 break;
             default:
                 handled = false;

@@ -115,6 +115,7 @@ public class UFOController : ParallaxObject
 
     protected void Update()
     {
+        if (PlayController.instance.IsGameOver()) return;
         switch (ufoState)
         {
             case UFOState.ENTERING:

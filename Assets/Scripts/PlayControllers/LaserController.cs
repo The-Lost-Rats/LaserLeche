@@ -20,7 +20,14 @@ public class LaserController : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        CheckForLaserBlast();
+        if (!PlayController.instance.IsGameOver())
+        {
+            CheckForLaserBlast();
+        }
+        else
+        {
+            ImFiringMahLazer = false;
+        }
 
         animator.SetFloat("PlayerVelXAbs", Mathf.Abs(playerController.PlayerVelX));
         animator.SetFloat("PlayerVelY", playerController.PlayerVelY);
@@ -29,9 +36,9 @@ public class LaserController : MonoBehaviour
 
     private void CheckForLaserBlast()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space) && !ImFiringMahLazer)
             ImFiringMahLazer = true;
-        else if (Input.GetKeyUp(KeyCode.Space))
+        else if (!Input.GetKey(KeyCode.Space) && ImFiringMahLazer)
             ImFiringMahLazer = false;
     }
 }

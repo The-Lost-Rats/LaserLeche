@@ -35,7 +35,7 @@ public class IntroController : MonoBehaviour
                 }
                 break;
             case IntroState.WAITING_FOR_INPUT:
-                if (Input.anyKeyDown)
+                if (Input.anyKey)
                 {
                     state = IntroState.FADE_OUT_LOGO;
                 }

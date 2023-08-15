@@ -28,6 +28,9 @@ public class PlayerController : MonoBehaviour
     [Range(0.01f, 2.0f)]
     private float invulnerabilityBlinkLength = 0.01f;
     [SerializeField]
+    [Range(0.01f, 2.0f)]
+    private float explodeWait = 0.01f;
+    [SerializeField]
     private List<Material> spriteMaterials;
     [SerializeField]
     private List<Sprite> heartSprites;
@@ -45,6 +48,7 @@ public class PlayerController : MonoBehaviour
     private bool updatedHeartUI;
     private float lastInvulnerabilityBlinkTime;
     private bool invulnerabilityMaterialWhite;
+    private float explodeStartTime;
 
     protected void Start()
     {
@@ -57,8 +61,25 @@ public class PlayerController : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        Move();
-        CheckForJump();
+        if (playerHealth > 0)
+        {
+            Move();
+            CheckForJump();
+        }
+        else
+        {
+            PlayerVelX = 0;
+            if (Time.fixedTime - lastInvulnerabilityBlinkTime > invulnerabilityBlinkLength && invulnerabilityMaterialWhite)
+            {
+                SetMaterial(spriteMaterials[0]);
+                invulnerabilityMaterialWhite = false;
+            }
+            if (Time.fixedTime - explodeStartTime > explodeWait)
+            {
+                laserController.gameObject.SetActive(false);
+                animator.SetBool("PlayerExplode", true);
+            }
+        }
         PlayerVelY = rb2d.velocity.y;
 
         DamageUpdate();
@@ -110,8 +131,7 @@ public class PlayerController : MonoBehaviour
                 }
                 if (Time.fixedTime - lastInvulnerabilityBlinkTime > invulnerabilityBlinkLength)
                 {
-                    sr.material = spriteMaterials[invulnerabilityMaterialWhite ? 1 : 0];
-                    laserController.spriteRenderer.material = spriteMaterials[invulnerabilityMaterialWhite ? 1 : 0];
+                    SetMaterial(spriteMaterials[invulnerabilityMaterialWhite ? 1 : 0]);
                     invulnerabilityMaterialWhite = !invulnerabilityMaterialWhite;
                     lastInvulnerabilityBlinkTime = Time.fixedTime;
                 }
@@ -120,16 +140,20 @@ public class PlayerController : MonoBehaviour
             {
                 if (animator.GetCurrentAnimatorStateInfo(1).IsName("UIHeart_Idle"))
                     playerHeart.SetActive(false);
-                sr.material = spriteMaterials[0];
-                laserController.spriteRenderer.material = spriteMaterials[0];
+                SetMaterial(spriteMaterials[0]);
             }
         }
         else if (playerHeart.activeSelf)
         {
             playerHeart.SetActive(false);
-            sr.material = spriteMaterials[0];
-            laserController.spriteRenderer.material = spriteMaterials[0];
+            SetMaterial(spriteMaterials[0]);
         }
+    }
+
+    private void SetMaterial(Material material)
+    {
+        sr.material = spriteMaterials[0];
+        laserController.spriteRenderer.material = spriteMaterials[0];
     }
 
     protected void OnTriggerEnter2D(Collider2D other)
@@ -149,15 +173,22 @@ public class PlayerController : MonoBehaviour
         invulnerable = true;
         updatedHeartUI = false;
         laserController.ImFiringMahLazer = false;
+        SetMaterial(spriteMaterials[1]);
+        lastInvulnerabilityBlinkTime = Time.fixedTime;
+        invulnerabilityMaterialWhite = true;
         if (playerHealth > 0)
         {
-            invulnerabilityMaterialWhite = true;
             playerHeart.SetActive(true);
             Invoke("TurnOffInvulnerability", invulnerabilityLength);
         }
         else
         {
-            // TODO DIE
+            sr.sortingLayerName = "Overlay";
+            sr.sortingOrder = 1;
+            laserController.spriteRenderer.sortingLayerName = "Overlay";
+            laserController.spriteRenderer.sortingOrder = 2;
+            explodeStartTime = Time.fixedTime;
+            PlayController.instance.GameOver();
         }
     }
 
