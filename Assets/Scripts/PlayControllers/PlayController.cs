@@ -48,6 +48,17 @@ public class PlayController : MonoBehaviour
         state = PlayState.START;
         stateTimer = Time.fixedTime;
         currLevel = 0;
+
+        // Invoke("TestUFO", 0.5f);
+    }
+
+    private void TestUFO()
+    {
+        GameObject ufo = Instantiate(ufoPrefab, sceneObjectsParent);
+        UFOController ufoController = ufo.GetComponent<UFOController>();
+        ufoController.Init(0);
+        ufo.transform.position = new Vector2(ParallaxController.instance.GetInitXPos(ufoController.mapCellLocation, ufoController.parallaxDistance), ufo.transform.position.y);
+        ParallaxController.instance.RegisterNewParallaxObj(ufoController);
     }
 
     protected void FixedUpdate()

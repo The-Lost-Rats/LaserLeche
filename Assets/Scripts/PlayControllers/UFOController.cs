@@ -1,16 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UFOController : ParallaxObject
 {
     private enum UFOState
     {
-        ENTERING,
-        IDLE,
-        DEATH,
-        DEAD
+        ENTERING = 0,
+        IDLE = 1,
+        LASER = 2,
+        DEATH = 3,
+        DEAD = 4
     }
+
+    [Header("References")]
+    [SerializeField]
+    private LayerMask playerLayer;
+    [SerializeField]
+    private GameObject ufoLaser;
 
     [Header("UFO Variables")]
     [SerializeField]
@@ -19,6 +27,9 @@ public class UFOController : ParallaxObject
     [SerializeField]
     [Range(1, 10)]
     private int ufoMaxHealth = 1;
+    [SerializeField]
+    [Range(0.01f, 5.0f)]
+    private float shouldDoSomethingTimer = 0.01f;
     
     [Header("Entering State Variables")]
     [SerializeField]
@@ -32,6 +43,14 @@ public class UFOController : ParallaxObject
     [SerializeField]
     [Range(0.0f, 5.0f)]
     private float floatSpeed;
+
+    [Header("Laser State Variables")]
+    [SerializeField]
+    [Range(0.01f, 5.0f)]
+    private float laserTime = 0.01f;
+    [SerializeField]
+    [Range(0.0f, 5.0f)]
+    private float laserCooldownTime = 0.0f;
 
     [Header("Death State Variables")]
     [SerializeField]
@@ -50,10 +69,9 @@ public class UFOController : ParallaxObject
     private UFOState ufoState;
     private int ufoHealth;
     private bool ufoInvulnerable;
+    private float lastLaserTime = -1;
 
-    private float enterStartTime;
-    private float idleFloatStartTime;
-    private float deathStartTime;
+    private float stateStartTime;
     private int lastDeathFadeFrame;
 
     protected override void OnStart()
@@ -63,9 +81,8 @@ public class UFOController : ParallaxObject
         initYPos = transform.position.y;
         ufoHealth = ufoMaxHealth;
 
-        ufoState = UFOState.ENTERING;
+        SetState(UFOState.ENTERING);
         SetYPosition(12.25f); // Put UFO just offscreen
-        enterStartTime = Time.time;
     }
 
     // TODO Add in more info on how the UFO works
@@ -80,27 +97,35 @@ public class UFOController : ParallaxObject
         {
             case UFOState.ENTERING:
             {
-                if (Time.time - enterStartTime <= enterLength)
+                if (Time.time - stateStartTime <= enterLength)
                 {
-                    float newY = ((12.25f - initYPos) * Mathf.Pow(1 - ((Time.time - enterStartTime) / enterLength), 3)) + initYPos;
+                    float newY = ((12.25f - initYPos) * Mathf.Pow(1 - ((Time.time - stateStartTime) / enterLength), 3)) + initYPos;
                     SetYPosition(newY);
                 }
                 else
                 {
-                    ufoState = UFOState.IDLE;
-                    idleFloatStartTime = Time.time;
+                    SetState(UFOState.IDLE);
                 }
                 break;
             }
             case UFOState.IDLE:
             {
-                float newY = initYPos + (Mathf.Sin((Time.time - idleFloatStartTime) * floatSpeed) * (floatAmplitude / 8.0f)) - (floatAmplitude % 2 == 0 ? 0.0f : 0.125f);
+                float newY = initYPos + (Mathf.Sin((Time.time - stateStartTime) * floatSpeed) * (floatAmplitude / 8.0f)) - (floatAmplitude % 2 == 0 ? 0.0f : 0.125f);
                 SetYPosition(newY);
+                CheckShouldDoSomething();
+                break;
+            }
+            case UFOState.LASER:
+            {
+                if (Time.time - stateStartTime > laserTime)
+                {
+                    SetState(UFOState.IDLE);
+                }
                 break;
             }
             case UFOState.DEATH:
             {
-                float deltaTime = Time.time - deathStartTime;
+                float deltaTime = Time.time - stateStartTime;
                 if (deltaTime <= deathLength)
                 {
                     float newY = transform.position.y - (deathSpeed * Time.deltaTime);
@@ -115,12 +140,64 @@ public class UFOController : ParallaxObject
                 }
                 else
                 {
-                    ufoState = UFOState.DEAD;
+                    SetState(UFOState.DEAD);
                 }
                 break;
             }
         }
         animator.SetInteger("UFOState", (int)ufoState);
+    }
+
+    private bool SetState(UFOState newState)
+    {
+        // Check if can enter into new state
+        if (ufoState == newState) return false;
+        switch (newState)
+        {
+            case UFOState.LASER:
+                if (lastLaserTime >= 0 && Time.time - lastLaserTime <= laserCooldownTime) return false;
+                break;
+        }
+
+        // Handle leaving a state
+        switch (ufoState)
+        {
+            case UFOState.LASER:
+                ufoLaser.SetActive(false);
+                lastLaserTime = Time.time;
+                break;
+        }
+
+        // Enter new state
+        stateStartTime = Time.time;
+        ufoState = newState;
+
+        // Handle entering a state
+        switch (ufoState)
+        {
+            case UFOState.LASER:
+                ufoLaser.SetActive(true);
+                break;
+            case UFOState.DEATH:
+                lastDeathFadeFrame = 0;
+                break;
+        }
+        return true;
+    }
+
+    private void CheckShouldDoSomething()
+    {
+        RaycastHit2D playerHit = Physics2D.Raycast(transform.position, Vector2.down, 20.0f, playerLayer);
+        if (playerHit.collider != null)
+        {
+            if (SetState(UFOState.LASER)) return;
+        }
+
+        if (Time.time - stateStartTime > shouldDoSomethingTimer)
+        {
+            // Do something
+            if (SetState(UFOState.LASER)) return;
+        }
     }
 
     protected void OnTriggerStay2D(Collider2D other)
@@ -129,21 +206,25 @@ public class UFOController : ParallaxObject
         {
             if (!ufoInvulnerable)
             {
-                ufoHealth--;
-                ufoInvulnerable = true;
-                if (ufoHealth > 0)
-                {
-                    animator.SetBool("UFOHit", true);
-                    Invoke("DisableHitAnimation", 0.1f);
-                    Invoke("TurnOffInvulnerability", invulnerabilityLength);
-                }
-                else
-                {
-                    deathStartTime = Time.time;
-                    lastDeathFadeFrame = 0;
-                    ufoState = UFOState.DEATH;
-                }
+                TakeHit();
             }
+        }
+    }
+
+    private void TakeHit()
+    {
+        ufoHealth--;
+        ufoInvulnerable = true;
+        if (ufoHealth > 0)
+        {
+            animator.SetBool("UFOHit", true);
+            Invoke("DisableHitAnimation", 0.1f);
+            Invoke("TurnOffInvulnerability", invulnerabilityLength);
+            SetState(UFOState.IDLE);
+        }
+        else
+        {
+            SetState(UFOState.DEATH);
         }
     }
 
