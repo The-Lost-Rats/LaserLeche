@@ -101,7 +101,7 @@ public class UFOController : ParallaxObject
         initYPos = transform.position.y;
         ufoHealth = ufoMaxHealth;
 
-        SetState(UFOState.ENTERING);
+        SetState(UFOState.ENTERING, true);
         SetYPosition(12.25f); // Put UFO just offscreen
     }
 
@@ -117,7 +117,7 @@ public class UFOController : ParallaxObject
 
     protected void Update()
     {
-        if (PlayController.instance.IsGameOver()) return;
+        if (!initialized || PlayController.instance.IsGameOver()) return;
         switch (ufoState)
         {
             case UFOState.ENTERING:
@@ -193,10 +193,10 @@ public class UFOController : ParallaxObject
         animator.SetInteger("UFOState", (int)ufoState);
     }
 
-    private bool SetState(UFOState newState)
+    private bool SetState(UFOState newState, bool ignoreSameCheck=false)
     {
         // Check if can enter into new state
-        if (ufoState == newState) return false;
+        if (!ignoreSameCheck && ufoState == newState) return false;
         switch (newState)
         {
             case UFOState.LASER:

@@ -70,10 +70,10 @@ public class PlayerController : MonoBehaviour
         else
         {
             PlayerVelX = 0;
-            if (Time.fixedTime - lastInvulnerabilityBlinkTime > invulnerabilityBlinkLength && invulnerabilityMaterialWhite)
+            if (Time.fixedTime - lastInvulnerabilityBlinkTime > invulnerabilityBlinkLength && !invulnerabilityMaterialWhite)
             {
                 SetMaterial(spriteMaterials[0]);
-                invulnerabilityMaterialWhite = false;
+                invulnerabilityMaterialWhite = true;
             }
             if (Time.fixedTime - explodeStartTime > explodeWait)
             {
@@ -160,8 +160,8 @@ public class PlayerController : MonoBehaviour
 
     private void SetMaterial(Material material)
     {
-        sr.material = spriteMaterials[0];
-        laserController.spriteRenderer.material = spriteMaterials[0];
+        sr.material = material;
+        laserController.spriteRenderer.material = material;
     }
 
     protected void OnTriggerEnter2D(Collider2D other)
@@ -183,7 +183,7 @@ public class PlayerController : MonoBehaviour
         laserController.StopFiringLaser();
         SetMaterial(spriteMaterials[1]);
         lastInvulnerabilityBlinkTime = Time.fixedTime;
-        invulnerabilityMaterialWhite = true;
+        invulnerabilityMaterialWhite = false;
         if (playerHealth > 0)
         {
             AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.LecheHurt);

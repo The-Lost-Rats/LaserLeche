@@ -25,7 +25,7 @@ public class ParallaxObject : MonoBehaviour
 
     protected new SpriteRenderer renderer;
 
-    private bool initialized = false;
+    protected bool initialized { get; private set; } = false;
 
     protected void Start()
     {
