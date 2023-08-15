@@ -176,7 +176,7 @@ MonoBehaviour:
   basicUIText: {fileID: 3407654016088147941, guid: 03fb3aa245ee6164189f6a297db6d55d, type: 3}
   backgroundUFOObject: {fileID: 3112908173999813402, guid: a23e38caa82f0464198e5a8047f50231, type: 3}
   ufoPrefab: {fileID: 15076407267131009, guid: 532a02d10307e72489b94c92d1703f2d, type: 3}
-  startLength: 0.5
+  startLength: 2.53
   backgroundUFOSpawnTime: 0.3
   beginTextSprite: {fileID: 21300000, guid: 077564faa9e19cb439f81d9b75ba77f7, type: 3}
   waveCompleteTextSprite: {fileID: 21300000, guid: ecdb119b6e8df544dabdcde58b7a09ad, type: 3}
@@ -1211,7 +1211,7 @@ Transform:
   m_GameObject: {fileID: 1431496338}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -7, y: -6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1185588081}
@@ -1388,7 +1388,7 @@ Transform:
   m_GameObject: {fileID: 1979361983}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 7, y: -6, z: 0}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1185588081}

@@ -28,7 +28,7 @@ public class PlayController : MonoBehaviour
     [SerializeField] private GameObject ufoPrefab;
 
     [Header("State Variables")]
-    [SerializeField] [Range(0.1f, 1.0f)] private float startLength = 0.1f;
+    [SerializeField] [Range(0.1f, 4.0f)] private float startLength = 0.1f;
     [SerializeField] [Range(0.0f, 1.0f)] private float backgroundUFOSpawnTime = 0.0f;
     [SerializeField] private Sprite beginTextSprite;
     [SerializeField] private Sprite waveCompleteTextSprite;
