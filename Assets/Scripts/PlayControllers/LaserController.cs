@@ -6,14 +6,16 @@ public class LaserController : MonoBehaviour
 {
     private Animator animator;
     private PlayerController playerController;
+    public SpriteRenderer spriteRenderer;
 
-    private bool imFiringMahLazer;
+    public bool ImFiringMahLazer;
 
     protected void Start()
     {
         animator = GetComponent<Animator>();
         playerController = transform.parent.GetComponent<PlayerController>();
-        imFiringMahLazer = false;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        ImFiringMahLazer = false;
     }
 
     protected void FixedUpdate()
@@ -22,11 +24,14 @@ public class LaserController : MonoBehaviour
 
         animator.SetFloat("PlayerVelXAbs", Mathf.Abs(playerController.PlayerVelX));
         animator.SetFloat("PlayerVelY", playerController.PlayerVelY);
-        animator.SetBool("LaserBlast", imFiringMahLazer);
+        animator.SetBool("LaserBlast", ImFiringMahLazer);
     }
 
     private void CheckForLaserBlast()
     {
-        imFiringMahLazer = Input.GetKey(KeyCode.Space);
+        if (Input.GetKeyDown(KeyCode.Space))
+            ImFiringMahLazer = true;
+        else if (Input.GetKeyUp(KeyCode.Space))
+            ImFiringMahLazer = false;
     }
 }

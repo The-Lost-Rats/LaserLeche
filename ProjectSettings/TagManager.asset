@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Laser
+  - HurtfulForPlayer
   layers:
   - Default
   - TransparentFX

@@ -65,7 +65,7 @@ public class PlayController : MonoBehaviour
         currLevel = 0;
         currArrowState = ArrowState.HIDDEN;
 
-        // Invoke("TestUFO", 0.5f);
+        Invoke("TestUFO", 0.5f);
     }
 
     private void TestUFO()
@@ -79,6 +79,7 @@ public class PlayController : MonoBehaviour
 
     protected void FixedUpdate()
     {
+        return;
         switch (state)
         {
             case PlayState.START:

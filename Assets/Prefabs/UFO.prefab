@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1030532612}
   m_Layer: 0
   m_Name: UFOLaser
-  m_TagString: Untagged
+  m_TagString: HurtfulForPlayer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,7 +98,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -6}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 1}
@@ -109,7 +109,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2, y: 0.0001}
+  m_Size: {x: 2, y: 12}
   m_EdgeRadius: 0
 --- !u!1 &15076407267131009
 GameObject:
@@ -248,7 +248,7 @@ MonoBehaviour:
   movementSpeed: 0.21
   movementHoverTime: 0
   laserTime: 5
-  laserCooldownTime: 3.98
+  laserCooldownTime: 0
   deathLength: 2.01
   deathSpeed: 0.45
   deathFadeFrames: 6
