@@ -180,7 +180,7 @@ public class PlayerController : MonoBehaviour
         playerHealth--;
         invulnerable = true;
         updatedHeartUI = false;
-        laserController.ImFiringMahLazer = false;
+        laserController.StopFiringLaser();
         SetMaterial(spriteMaterials[1]);
         lastInvulnerabilityBlinkTime = Time.fixedTime;
         invulnerabilityMaterialWhite = true;

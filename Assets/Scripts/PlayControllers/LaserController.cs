@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class LaserController : MonoBehaviour
 {
@@ -8,7 +9,8 @@ public class LaserController : MonoBehaviour
     private PlayerController playerController;
     public SpriteRenderer spriteRenderer;
 
-    public bool ImFiringMahLazer;
+    public bool ImFiringMahLazer { get; private set; }
+    private int laserSoundEffectId = -1;
 
     protected void Start()
     {
@@ -26,7 +28,7 @@ public class LaserController : MonoBehaviour
         }
         else
         {
-            ImFiringMahLazer = false;
+            StopFiringLaser();
         }
 
         animator.SetFloat("PlayerVelXAbs", Mathf.Abs(playerController.PlayerVelX));
@@ -37,8 +39,30 @@ public class LaserController : MonoBehaviour
     private void CheckForLaserBlast()
     {
         if (Input.GetKey(KeyCode.Space) && !ImFiringMahLazer)
-            ImFiringMahLazer = true;
+            StartFiringLaser();
         else if (!Input.GetKey(KeyCode.Space) && ImFiringMahLazer)
-            ImFiringMahLazer = false;
+            StopFiringLaser();
+    }
+
+    private void StartFiringLaser()
+    {
+        ImFiringMahLazer = true;
+        Invoke("PlayLaserSoundEffect", 0.4f);
+    }
+
+    public void StopFiringLaser()
+    {
+        CancelInvoke("PlayLaserSoundEffect");
+        ImFiringMahLazer = false;
+        if (laserSoundEffectId >= 0)
+        {
+            AudioController.Instance.StopOneShotAudio(laserSoundEffectId);
+            laserSoundEffectId = -1;
+        }
+    }
+
+    private void PlayLaserSoundEffect()
+    {
+        laserSoundEffectId = AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.LecheLaser, true);
     }
 }

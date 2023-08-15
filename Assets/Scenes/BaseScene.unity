@@ -179,6 +179,9 @@ MonoBehaviour:
   - audioClip: {fileID: 8300000, guid: 1a20213cc1f1dcd4e9b125d8ef43a8de, type: 3}
     volume: 1
     audioName: 
+  - audioClip: {fileID: 8300000, guid: 84d37c90670af0c408ec24b1bd018c5b, type: 3}
+    volume: 1
+    audioName: 
   musicClipsList:
   - audioClip: {fileID: 8300000, guid: 89c5e87a119cffd4e8b4cd51eb8d50c0, type: 3}
     volume: 1.2
