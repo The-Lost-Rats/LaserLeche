@@ -43,6 +43,12 @@ public class UFOController : ParallaxObject
     [SerializeField]
     [Range(0.0f, 5.0f)]
     private float floatSpeed;
+    [SerializeField]
+    [Range(0.01f, 1.0f)]
+    private float movementSpeed = 0.01f;
+    [SerializeField]
+    [Range(0.0f, 5.0f)]
+    private float movementHoverTime;
 
     [Header("Laser State Variables")]
     [SerializeField]
@@ -69,8 +75,20 @@ public class UFOController : ParallaxObject
     private UFOState ufoState;
     private int ufoHealth;
     private bool ufoInvulnerable;
-    private float lastLaserTime = -1;
 
+    private bool canMove;
+    private int[] movementBounds;
+    private enum UFOMovementState
+    {
+        MOVING_TO_A,
+        MOVING_TO_B,
+        HOVERING
+    }
+    private UFOMovementState movementState;
+    private UFOMovementState lastMovementState;
+    private float hoverStateStartTime;
+
+    private float lastLaserTime = -1;
     private float stateStartTime;
     private int lastDeathFadeFrame;
 
@@ -85,10 +103,14 @@ public class UFOController : ParallaxObject
         SetYPosition(12.25f); // Put UFO just offscreen
     }
 
-    // TODO Add in more info on how the UFO works
-    public void Init(int startingCell)
+    public void Init(int startingCell, int[] movementBounds)
     {
         mapCellLocation = startingCell;
+        if (movementBounds != null)
+        {
+            canMove = true;
+            this.movementBounds = movementBounds;
+        }
     }
 
     protected void Update()
@@ -112,11 +134,31 @@ public class UFOController : ParallaxObject
             {
                 float newY = initYPos + (Mathf.Sin((Time.time - stateStartTime) * floatSpeed) * (floatAmplitude / 8.0f)) - (floatAmplitude % 2 == 0 ? 0.0f : 0.125f);
                 SetYPosition(newY);
+                if (canMove)
+                {
+                    switch (movementState)
+                    {
+                        case UFOMovementState.MOVING_TO_A:
+                        case UFOMovementState.MOVING_TO_B:
+                            if (GetCurrMapCell() == movementBounds[movementState == UFOMovementState.MOVING_TO_A ? 0 : 1])
+                            {
+                                UpdateMovementState(false);
+                            }
+                            break;
+                        case UFOMovementState.HOVERING:
+                            if (Time.time - hoverStateStartTime > movementHoverTime)
+                            {
+                                UpdateMovementState(true);
+                            }
+                            break;
+                    }
+                }
                 CheckShouldDoSomething();
                 break;
             }
             case UFOState.LASER:
             {
+                // TODO Move to center of cell
                 if (Time.time - stateStartTime > laserTime)
                 {
                     SetState(UFOState.IDLE);
@@ -162,6 +204,15 @@ public class UFOController : ParallaxObject
         // Handle leaving a state
         switch (ufoState)
         {
+            case UFOState.ENTERING:
+                lastLaserTime = Time.time; // This will ensure we cool down the laser
+                break;
+            case UFOState.IDLE:
+                if (canMove && movementState != UFOMovementState.HOVERING)
+                {
+                    UpdateMovementState(false);
+                }
+                break;
             case UFOState.LASER:
                 ufoLaser.SetActive(false);
                 lastLaserTime = Time.time;
@@ -175,6 +226,10 @@ public class UFOController : ParallaxObject
         // Handle entering a state
         switch (ufoState)
         {
+            case UFOState.IDLE:
+                if (canMove)
+                    UpdateMovementState(true);
+                break;
             case UFOState.LASER:
                 ufoLaser.SetActive(true);
                 break;
@@ -183,6 +238,29 @@ public class UFOController : ParallaxObject
                 break;
         }
         return true;
+    }
+
+    private void UpdateMovementState(bool move)
+    {
+        if (!canMove) return;
+
+        if (move)
+        {
+            // TODO Maybe try to move away from the player?
+            if (lastMovementState == UFOMovementState.MOVING_TO_A)
+                movementState = GetCurrMapCell() != movementBounds[0] ? UFOMovementState.MOVING_TO_A : UFOMovementState.MOVING_TO_B;
+            else
+                movementState = GetCurrMapCell() != movementBounds[1] ? UFOMovementState.MOVING_TO_B : UFOMovementState.MOVING_TO_A;
+            relativeSpeed = movementState == UFOMovementState.MOVING_TO_A ? -movementSpeed : movementSpeed;
+            lastMovementState = UFOMovementState.HOVERING;
+        }
+        else
+        {
+            relativeSpeed = 0;
+            hoverStateStartTime = Time.time;
+            lastMovementState = movementState;
+            movementState = UFOMovementState.HOVERING;
+        }
     }
 
     private void CheckShouldDoSomething()

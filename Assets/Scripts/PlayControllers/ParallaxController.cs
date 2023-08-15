@@ -66,18 +66,6 @@ public class ParallaxController : MonoBehaviour
         }
     }
 
-    public void RegisterNewParallaxObj(ParallaxObject parallaxObj)
-    {
-        parallaxObjects.Add(parallaxObj);
-    }
-
-    public float GetInitXPos(int cellLoc, int parallaxDist)
-    {
-        if (cellLoc >= (mapSize / 2)) cellLoc -= mapSize;
-        float startingRawXPos = (Constants.PIXELS_PER_UNIT * cellLoc) + (Constants.PIXELS_PER_UNIT / 2) - playerPosX;
-        return startingRawXPos / Mathf.Pow(2, parallaxDist);
-    }
-
 	protected void FixedUpdate()
     {
         playerPosX += playerController.PlayerVelX;
@@ -97,10 +85,38 @@ public class ParallaxController : MonoBehaviour
         }
 	}
 
-    // Not sure if we'll ever need this, but leaving it here just in case
-    private int GetCurrMapCell()
+    public void RegisterNewParallaxObj(ParallaxObject parallaxObj)
     {
-        return (int)Mathf.Floor(playerPosX * Constants.PIXELS_PER_UNIT / mapCellSize);
+        parallaxObjects.Add(parallaxObj);
+    }
+
+    public float GetInitXPos(int cellLoc, int parallaxDist)
+    {
+        if (cellLoc >= (mapSize / 2)) cellLoc -= mapSize;
+        float startingRawXPos = (Constants.PIXELS_PER_UNIT * cellLoc) + (Constants.PIXELS_PER_UNIT / 2) - playerPosX;
+        return startingRawXPos / Mathf.Pow(2, parallaxDist);
+    }
+
+    // Not sure if we'll ever need this, but leaving it here just in case
+    public int GetCurrMapCell()
+    {
+        return GetMapCellFromPos(0, 0);
+    }
+
+    public int GetMapCellFromPos(float posX, int parallaxDist = 0)
+    {
+        int cell = Mathf.RoundToInt((((posX * Mathf.Pow(2, parallaxDist)) + playerPosX - (Constants.PIXELS_PER_UNIT / 2)) * Constants.PIXELS_PER_UNIT) / mapCellSize);
+        while (cell < 0) cell += mapSize;
+        while (cell >= mapSize) cell -= mapSize;
+        return cell;
+    }
+
+    public float GetPosFromMapCell(int mapCell, int parallaxDist = 0)
+    {
+        float pos = ((mapCell * mapCellSize) / Constants.PIXELS_PER_UNIT) - playerPosX + (Constants.PIXELS_PER_UNIT / 2);
+        while (pos > Constants.PIXELS_PER_UNIT * (mapSize / 2)) pos -= Constants.PIXELS_PER_UNIT * mapSize;
+        while (pos < -Constants.PIXELS_PER_UNIT * (mapSize / 2)) pos += Constants.PIXELS_PER_UNIT * mapSize;
+        return pos / Mathf.Pow(2, parallaxDist);
     }
 
     public int GetScreenBoundsForDistance(int parallaxDist)

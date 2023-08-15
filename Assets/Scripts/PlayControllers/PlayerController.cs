@@ -36,9 +36,11 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("PlayerVelY", PlayerVelY);
     }
 
+    private bool test;
     private void Move()
     {
-        PlayerVelX = Input.GetAxisRaw("Horizontal") * playerSpeedScalar;
+        if (Input.GetKeyDown(KeyCode.L)) test = !test;
+        PlayerVelX = test ? playerSpeedScalar : Input.GetAxisRaw("Horizontal") * playerSpeedScalar;
         if (PlayerVelX > 0 && transform.localScale.x < 0) {
             transform.localScale = new Vector3(1, 1, 1);
         }

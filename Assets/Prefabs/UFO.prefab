@@ -245,6 +245,8 @@ MonoBehaviour:
   enterLength: 1.59
   floatAmplitude: 2
   floatSpeed: 4.06
+  movementSpeed: 0.21
+  movementHoverTime: 0
   laserTime: 5
   laserCooldownTime: 3.98
   deathLength: 2.01

@@ -56,7 +56,7 @@ public class PlayController : MonoBehaviour
     {
         GameObject ufo = Instantiate(ufoPrefab, sceneObjectsParent);
         UFOController ufoController = ufo.GetComponent<UFOController>();
-        ufoController.Init(0);
+        ufoController.Init(0, new int[2]{95, 5});
         ufo.transform.position = new Vector2(ParallaxController.instance.GetInitXPos(ufoController.mapCellLocation, ufoController.parallaxDistance), ufo.transform.position.y);
         ParallaxController.instance.RegisterNewParallaxObj(ufoController);
     }
@@ -215,7 +215,8 @@ public class PlayController : MonoBehaviour
 
         GameObject ufo = Instantiate(ufoPrefab, sceneObjectsParent);
         UFOController ufoController = ufo.GetComponent<UFOController>();
-        ufoController.Init(ufoData.startingCell);
+        int[] movementBounds = ufoData.moving ? new int[2]{ufoData.movementCellA, ufoData.movementCellB} : null;
+        ufoController.Init(ufoData.startingCell, movementBounds);
         ufo.transform.position = new Vector2(ParallaxController.instance.GetInitXPos(ufoController.mapCellLocation, ufoController.parallaxDistance), ufo.transform.position.y);
         ParallaxController.instance.RegisterNewParallaxObj(ufoController);
         spawnedUFOs[ufoNum] = ufoController;

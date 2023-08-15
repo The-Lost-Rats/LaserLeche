@@ -11,6 +11,8 @@ public class LevelData : ScriptableObject
         public int startingCell;
         public float startingBackgroundYPos;
         public bool moving;
+        public int movementCellA;
+        public int movementCellB;
         public bool spawnProbes;
     }
 

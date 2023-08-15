@@ -63,7 +63,7 @@ public class ParallaxObject : MonoBehaviour
         if (!initialized) return;
 
         Vector2 pos = transform.position;
-        pos.x -= xDiff / Mathf.Pow(2, parallaxDistance);
+        pos.x -= (xDiff - relativeSpeed) / Mathf.Pow(2, parallaxDistance);
         // Handle bounds
         if (pos.x > objBounds)
         {
@@ -80,5 +80,10 @@ public class ParallaxObject : MonoBehaviour
                 pos.x = objBounds;
         }
         transform.position = pos;
+    }
+
+    protected int GetCurrMapCell()
+    {
+        return ParallaxController.instance.GetMapCellFromPos(transform.position.x);
     }
 }
