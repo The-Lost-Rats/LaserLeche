@@ -168,7 +168,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelDatas:
-  - {fileID: 11400000, guid: bb2a9b717789c2e439fc2f47acb10a8d, type: 2}
+  - {fileID: 11400000, guid: dfb9d02433448794580fcf9afa6aef4f, type: 2}
+  - {fileID: 11400000, guid: 945d493f5018b8747b9d182c9144cd2d, type: 2}
+  - {fileID: 11400000, guid: 21d6441e3882f544fa4f436f827f8927, type: 2}
   uiParent: {fileID: 1185588081}
   backgroundObjectsParent: {fileID: 328219743}
   sceneObjectsParent: {fileID: 948949798}
@@ -623,7 +625,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &777793401
 SpriteRenderer:
   m_ObjectHideFlags: 0

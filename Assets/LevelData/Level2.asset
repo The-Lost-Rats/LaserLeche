@@ -13,9 +13,53 @@ MonoBehaviour:
   m_Name: Level2
   m_EditorClassIdentifier: 
   ufoList:
-  - startingCell: 1
+  - startingCell: 5
     startingBackgroundYPos: 2
+    moving: 0
+    movementCellA: 0
+    movementCellB: 0
+    spawnProbes: 0
+  - startingCell: 85
+    startingBackgroundYPos: 4
+    moving: 0
+    movementCellA: 0
+    movementCellB: 0
+    spawnProbes: 0
+  - startingCell: 20
+    startingBackgroundYPos: 0
     moving: 1
+    movementCellA: 10
+    movementCellB: 30
+    spawnProbes: 0
+  - startingCell: 30
+    startingBackgroundYPos: 6
+    moving: 1
+    movementCellA: 15
+    movementCellB: 35
+    spawnProbes: 0
+  - startingCell: 55
+    startingBackgroundYPos: 2
+    moving: 0
+    movementCellA: 0
+    movementCellB: 0
+    spawnProbes: 0
+  - startingCell: 70
+    startingBackgroundYPos: 3.5
+    moving: 1
+    movementCellA: 65
+    movementCellB: 80
+    spawnProbes: 0
+  - startingCell: 0
+    startingBackgroundYPos: 5
+    moving: 1
+    movementCellA: 95
+    movementCellB: 5
     spawnProbes: 1
-  timeToNextUFO: 2
+  - startingCell: 25
+    startingBackgroundYPos: 4
+    moving: 1
+    movementCellA: 20
+    movementCellB: 30
+    spawnProbes: 1
+  timeToNextUFO: 8
   waveNumImage: {fileID: 21300000, guid: c3c6c04ef24cb9f489d7892a0aadb546, type: 3}
