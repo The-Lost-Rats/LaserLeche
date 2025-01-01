@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
             Move();
             CheckForJump();
         }
-        PlayerVelY = rb2d.velocity.y;
+        PlayerVelY = rb2d.linearVelocity.y;
 
         DamageUpdate();
 
@@ -114,7 +114,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetAxisRaw("Vertical") > 0)
         {
             if (IsOnGround()) {
-                rb2d.velocity = new Vector2(0, jumpForce);
+                rb2d.linearVelocity = new Vector2(0, jumpForce);
                 if (!AudioController.Instance.OneShotAudioPlaying(SoundEffectKeys.Jump))
                     AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.Jump);
             }
