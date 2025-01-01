@@ -2,13 +2,12 @@ using UnityEngine;
 
 public class PlaySceneController : ISceneController
 {
-    override protected GameState GetGameState() { return GameState.PLAY; }
-
-    private void Start()
+    protected override GameState GetGameState()
     {
+        return GameState.PLAY;
     }
 
-    override protected void SceneUpdate()
-    {
-    }
+    private void Start() { }
+
+    protected override void SceneUpdate() { }
 }

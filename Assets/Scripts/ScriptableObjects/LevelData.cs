@@ -17,6 +17,7 @@ public class LevelData : ScriptableObject
     }
 
     public List<UFOData> ufoList;
+
     [Range(0.0f, 30.0f)]
     public float timeToNextUFO;
     public Sprite waveNumImage;

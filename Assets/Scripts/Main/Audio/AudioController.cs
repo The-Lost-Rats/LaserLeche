@@ -26,6 +26,7 @@ public static class MusicKeys
 public class GameAudioClip
 {
     public AudioClip audioClip;
+
     [Range(0, 2)]
     public float volume = 1;
     public string audioName = "";
@@ -35,20 +36,28 @@ public class AudioController : MonoBehaviour
 {
     public static AudioController Instance { get; private set; }
 
-    [SerializeField] private GameAudioSource gameAudioSourcePrefab;
+    [SerializeField]
+    private GameAudioSource gameAudioSourcePrefab;
 
     [SerializeField]
     [Range(0, 1)]
     private float baseVolume;
 
-    [SerializeField] private List<GameAudioClip> audioClipsList;
-    [SerializeField] private List<GameAudioClip> musicClipsList;
+    [SerializeField]
+    private List<GameAudioClip> audioClipsList;
 
-    [SerializeField] private Dictionary<string, GameAudioClip> audioClips;
-    [SerializeField] private Dictionary<string, GameAudioClip> musicClips;
+    [SerializeField]
+    private List<GameAudioClip> musicClipsList;
+
+    [SerializeField]
+    private Dictionary<string, GameAudioClip> audioClips;
+
+    [SerializeField]
+    private Dictionary<string, GameAudioClip> musicClips;
 
     private GameAudioSource musicSource;
-    private Dictionary<int, GameAudioSource> oneShotAudioSources = new Dictionary<int, GameAudioSource>();
+    private Dictionary<int, GameAudioSource> oneShotAudioSources =
+        new Dictionary<int, GameAudioSource>();
     private int oneShotAudioSourceNextId = 1;
 
     private void Awake()
@@ -69,12 +78,14 @@ public class AudioController : MonoBehaviour
         audioClips = new Dictionary<string, GameAudioClip>(audioClipsList.Count);
         foreach (GameAudioClip gameClip in audioClipsList)
         {
-            audioClips[gameClip.audioName != "" ? gameClip.audioName : gameClip.audioClip.name] = gameClip;
+            audioClips[gameClip.audioName != "" ? gameClip.audioName : gameClip.audioClip.name] =
+                gameClip;
         }
         musicClips = new Dictionary<string, GameAudioClip>(musicClipsList.Count);
         foreach (GameAudioClip gameClip in musicClipsList)
         {
-            musicClips[gameClip.audioName != "" ? gameClip.audioName : gameClip.audioClip.name] = gameClip;
+            musicClips[gameClip.audioName != "" ? gameClip.audioName : gameClip.audioClip.name] =
+                gameClip;
         }
 
         VerifyAudioSources();
@@ -121,7 +132,8 @@ public class AudioController : MonoBehaviour
         foreach (GameAudioSource audioSource in oneShotAudioSources.Values)
         {
             // This doesn't actually work unless the clip name is the same as the key name
-            if (audioSource.GetClipName() == key) return true;
+            if (audioSource.GetClipName() == key)
+                return true;
         }
         return false;
     }
@@ -186,7 +198,7 @@ public class AudioController : MonoBehaviour
                 invalidSoundEffectKeys.Add(clipName);
             }
         }
-        
+
         List<string> invalidMusicKeys = new List<string>();
         foreach (System.Reflection.FieldInfo constant in typeof(MusicKeys).GetFields())
         {

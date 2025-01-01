@@ -10,13 +10,20 @@ public class IntroController : MonoBehaviour
         WAITING_FOR_INPUT = 1,
         FADE_OUT_LOGO = 2,
         LECHE_ANIM = 3,
-        FADE_OUT = 4
+        FADE_OUT = 4,
     }
 
-    [SerializeField] private Animator logoAnimator;
-    [SerializeField] private Animator creditsAnimator;
-    [SerializeField] private Animator lecheAnimator;
-    [SerializeField] private Animator overlayAnimator;
+    [SerializeField]
+    private Animator logoAnimator;
+
+    [SerializeField]
+    private Animator creditsAnimator;
+
+    [SerializeField]
+    private Animator lecheAnimator;
+
+    [SerializeField]
+    private Animator overlayAnimator;
 
     private bool startedPlayingGameMusic = false;
 
@@ -45,8 +52,14 @@ public class IntroController : MonoBehaviour
         switch (state)
         {
             case IntroState.LOADING:
-                if ((!credits && logoAnimator.GetCurrentAnimatorStateInfo(0).IsName("Logo_Loop")) ||
-                    (credits && !overlayAnimator.GetBool("OverlayOut") && overlayAnimator.GetCurrentAnimatorStateInfo(0).IsName("Overlay_Out")))
+                if (
+                    (!credits && logoAnimator.GetCurrentAnimatorStateInfo(0).IsName("Logo_Loop"))
+                    || (
+                        credits
+                        && !overlayAnimator.GetBool("OverlayOut")
+                        && overlayAnimator.GetCurrentAnimatorStateInfo(0).IsName("Overlay_Out")
+                    )
+                )
                 {
                     state = IntroState.WAITING_FOR_INPUT;
                 }
@@ -59,8 +72,15 @@ public class IntroController : MonoBehaviour
                 }
                 break;
             case IntroState.FADE_OUT_LOGO:
-                if ((!credits && logoAnimator.GetCurrentAnimatorStateInfo(1).IsName("Logo_Gone")) ||
-                    (credits && creditsAnimator.GetCurrentAnimatorStateInfo(1).IsName("Credits_Fade_Done")))
+                if (
+                    (!credits && logoAnimator.GetCurrentAnimatorStateInfo(1).IsName("Logo_Gone"))
+                    || (
+                        credits
+                        && creditsAnimator
+                            .GetCurrentAnimatorStateInfo(1)
+                            .IsName("Credits_Fade_Done")
+                    )
+                )
                 {
                     if (!credits)
                     {
@@ -77,7 +97,10 @@ public class IntroController : MonoBehaviour
                 }
                 break;
             case IntroState.LECHE_ANIM:
-                if (lecheAnimator.GetCurrentAnimatorStateInfo(0).IsName("Leche_Stands") && !startedPlayingGameMusic)
+                if (
+                    lecheAnimator.GetCurrentAnimatorStateInfo(0).IsName("Leche_Stands")
+                    && !startedPlayingGameMusic
+                )
                 {
                     AudioController.Instance.PlayMusic(MusicKeys.GameMusic);
                     startedPlayingGameMusic = true;
@@ -97,9 +120,12 @@ public class IntroController : MonoBehaviour
                 break;
         }
 
-        if (logoAnimator) logoAnimator.SetInteger("IntroState", (int)state);
-        if (lecheAnimator) lecheAnimator.SetInteger("IntroState", (int)state);
-        if (creditsAnimator) creditsAnimator.SetInteger("IntroState", (int)state);
+        if (logoAnimator)
+            logoAnimator.SetInteger("IntroState", (int)state);
+        if (lecheAnimator)
+            lecheAnimator.SetInteger("IntroState", (int)state);
+        if (creditsAnimator)
+            creditsAnimator.SetInteger("IntroState", (int)state);
     }
 
     private void HackyTurnOffOverlayOut()

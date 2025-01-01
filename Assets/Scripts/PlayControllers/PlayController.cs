@@ -17,49 +17,84 @@ public class PlayController : MonoBehaviour
         WAVE_COMPLETE = 5,
         GAME_WON_A = 6,
         GAME_WON_B = 7,
-        GAME_OVER = 8
+        GAME_OVER = 8,
     }
 
     [Header("Game Data")]
-    [SerializeField] private List<LevelData> levelDatas;
+    [SerializeField]
+    private List<LevelData> levelDatas;
 
     [Header("References")]
-    [SerializeField] private Transform uiParent;
-    [SerializeField] private Transform backgroundObjectsParent;
-    [SerializeField] private Transform sceneObjectsParent;
-    [SerializeField] private GameObject overlay;
-    [SerializeField] private SpriteRenderer tapToContinueRenderer;
+    [SerializeField]
+    private Transform uiParent;
+
+    [SerializeField]
+    private Transform backgroundObjectsParent;
+
+    [SerializeField]
+    private Transform sceneObjectsParent;
+
+    [SerializeField]
+    private GameObject overlay;
+
+    [SerializeField]
+    private SpriteRenderer tapToContinueRenderer;
 
     [Header("Prefabs")]
-    [SerializeField] private GameObject basicUIText;
-    [SerializeField] private GameObject backgroundUFOObject;
-    [SerializeField] private GameObject ufoPrefab;
+    [SerializeField]
+    private GameObject basicUIText;
+
+    [SerializeField]
+    private GameObject backgroundUFOObject;
+
+    [SerializeField]
+    private GameObject ufoPrefab;
 
     [Header("State Variables")]
-    [SerializeField] [Range(0.1f, 4.0f)] private float startLength = 0.1f;
-    [SerializeField] [Range(0.0f, 1.0f)] private float backgroundUFOSpawnTime = 0.0f;
-    [SerializeField] private Sprite beginTextSprite;
-    [SerializeField] private Sprite waveCompleteTextSprite;
-    [SerializeField] private Sprite gameWonTextSprite;
+    [SerializeField]
+    [Range(0.1f, 4.0f)]
+    private float startLength = 0.1f;
+
+    [SerializeField]
+    [Range(0.0f, 1.0f)]
+    private float backgroundUFOSpawnTime = 0.0f;
+
+    [SerializeField]
+    private Sprite beginTextSprite;
+
+    [SerializeField]
+    private Sprite waveCompleteTextSprite;
+
+    [SerializeField]
+    private Sprite gameWonTextSprite;
 
     [Header("UFO Arrow")]
-    [SerializeField] private SpriteRenderer leftUFOArrow;
-    [SerializeField] private SpriteRenderer rightUFOArrow;
-    [SerializeField] private List<Sprite> ufoArrowSprites;
-    [SerializeField] [Range(0.1f, 2.0f)] private float ufoArrowBlinkRate = 0.1f;
+    [SerializeField]
+    private SpriteRenderer leftUFOArrow;
+
+    [SerializeField]
+    private SpriteRenderer rightUFOArrow;
+
+    [SerializeField]
+    private List<Sprite> ufoArrowSprites;
+
+    [SerializeField]
+    [Range(0.1f, 2.0f)]
+    private float ufoArrowBlinkRate = 0.1f;
 
     private PlayState state;
 
     private int currLevel;
     private float stateTimer;
     private int numUFOsDestroyed;
-    
+
     private enum ArrowState
     {
         HIDDEN,
         LEFT_UFO,
-        RIGHT_UFO
+        RIGHT_UFO,
     }
+
     private ArrowState currArrowState;
     private float lastArrowUpdateTime;
 
@@ -94,8 +129,14 @@ public class PlayController : MonoBehaviour
     {
         GameObject ufo = Instantiate(ufoPrefab, sceneObjectsParent);
         UFOController ufoController = ufo.GetComponent<UFOController>();
-        ufoController.Init(0, new int[2]{95, 5});
-        ufo.transform.position = new Vector2(ParallaxController.instance.GetInitXPos(ufoController.mapCellLocation, ufoController.parallaxDistance), ufo.transform.position.y);
+        ufoController.Init(0, new int[2] { 95, 5 });
+        ufo.transform.position = new Vector2(
+            ParallaxController.instance.GetInitXPos(
+                ufoController.mapCellLocation,
+                ufoController.parallaxDistance
+            ),
+            ufo.transform.position.y
+        );
         ParallaxController.instance.RegisterNewParallaxObj(ufoController);
     }
 
@@ -148,91 +189,97 @@ public class PlayController : MonoBehaviour
                 }
                 break;
             case PlayState.GAMEPLAY:
+            {
+                int numUFOs = levelDatas[currLevel].ufoList.Count;
+                for (int i = 0; i < numUFOs; i++)
                 {
-                    int numUFOs = levelDatas[currLevel].ufoList.Count;
-                    for (int i = 0; i < numUFOs; i++)
+                    if (backgroundUFOs[i] != null && backgroundUFOs[i].IsDescended())
                     {
-                        if (backgroundUFOs[i] != null && backgroundUFOs[i].IsDescended())
-                        {
-                            SpawnUFO(i);
-                        }
+                        SpawnUFO(i);
                     }
-                    for (int i = 0; i < numUFOs; i++)
-                    {
-                        if (spawnedUFOs[i] != null && spawnedUFOs[i].IsDead())
-                        {
-                            Destroy(spawnedUFOs[i].gameObject);
-                            spawnedUFOs[i] = null;
-                            numUFOsDestroyed++;
-                        }
-                    }
-                    if (numUFOsDestroyed >= numUFOs)
-                    {
-                        if (currLevel < (levelDatas.Count - 1))
-                        {
-                            AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.NextWave);
-                            GameObject waveCompleteText = Instantiate(basicUIText, uiParent);
-                            SpriteRenderer sr = waveCompleteText.GetComponent<SpriteRenderer>();
-                            sr.sprite = waveCompleteTextSprite;
-                            currAnimator = waveCompleteText.GetComponent<Animator>();
-                            state = PlayState.WAVE_COMPLETE;
-                        }
-                        else
-                        {
-                            FadeOutMusic();
-                            AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.GameWin);
-                            GameObject gameWonText = Instantiate(basicUIText, uiParent);
-                            SpriteRenderer sr = gameWonText.GetComponent<SpriteRenderer>();
-                            sr.sprite = gameWonTextSprite;
-                            currAnimator = gameWonText.GetComponent<Animator>();
-                            state = PlayState.GAME_WON_A;
-                        }
-                    }
-                    break;
                 }
+                for (int i = 0; i < numUFOs; i++)
+                {
+                    if (spawnedUFOs[i] != null && spawnedUFOs[i].IsDead())
+                    {
+                        Destroy(spawnedUFOs[i].gameObject);
+                        spawnedUFOs[i] = null;
+                        numUFOsDestroyed++;
+                    }
+                }
+                if (numUFOsDestroyed >= numUFOs)
+                {
+                    if (currLevel < (levelDatas.Count - 1))
+                    {
+                        AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.NextWave);
+                        GameObject waveCompleteText = Instantiate(basicUIText, uiParent);
+                        SpriteRenderer sr = waveCompleteText.GetComponent<SpriteRenderer>();
+                        sr.sprite = waveCompleteTextSprite;
+                        currAnimator = waveCompleteText.GetComponent<Animator>();
+                        state = PlayState.WAVE_COMPLETE;
+                    }
+                    else
+                    {
+                        FadeOutMusic();
+                        AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.GameWin);
+                        GameObject gameWonText = Instantiate(basicUIText, uiParent);
+                        SpriteRenderer sr = gameWonText.GetComponent<SpriteRenderer>();
+                        sr.sprite = gameWonTextSprite;
+                        currAnimator = gameWonText.GetComponent<Animator>();
+                        state = PlayState.GAME_WON_A;
+                    }
+                }
+                break;
+            }
             case PlayState.WAVE_COMPLETE:
+            {
+                if (currAnimator && currAnimator.GetCurrentAnimatorStateInfo(0).IsName("TextGone"))
                 {
-                    if (currAnimator && currAnimator.GetCurrentAnimatorStateInfo(0).IsName("TextGone"))
-                    {
-                        Destroy(currAnimator.gameObject);
-                        currAnimator = null;
-                        currLevel++;
-                        stateTimer = Time.fixedTime;
-                        state = PlayState.START;
-                    }
-                    break;
+                    Destroy(currAnimator.gameObject);
+                    currAnimator = null;
+                    currLevel++;
+                    stateTimer = Time.fixedTime;
+                    state = PlayState.START;
                 }
+                break;
+            }
             case PlayState.GAME_WON_A:
+            {
+                if (!AudioController.Instance.OneShotAudioPlaying(SoundEffectKeys.GameWin))
                 {
-                    if (!AudioController.Instance.OneShotAudioPlaying(SoundEffectKeys.GameWin))
-                    {
-                        overlay.SetActive(true);
-                        currAnimator = overlay.GetComponent<Animator>();
-                        currAnimator.SetBool("OverlayIn", true);
-                        state = PlayState.GAME_WON_B;
-                    }
-                    break;
+                    overlay.SetActive(true);
+                    currAnimator = overlay.GetComponent<Animator>();
+                    currAnimator.SetBool("OverlayIn", true);
+                    state = PlayState.GAME_WON_B;
                 }
+                break;
+            }
             case PlayState.GAME_WON_B:
+            {
+                if (
+                    currAnimator && currAnimator.GetCurrentAnimatorStateInfo(0).IsName("Overlay_In")
+                )
                 {
-                    if (currAnimator && currAnimator.GetCurrentAnimatorStateInfo(0).IsName("Overlay_In"))
-                    {
-                        GameController.instance.level = 0;
-                        GameController.instance.gameWon = true;
-                        GameController.instance.ChangeState(GameState.INTRO);
-                    }
-                    break;
+                    GameController.instance.level = 0;
+                    GameController.instance.gameWon = true;
+                    GameController.instance.ChangeState(GameState.INTRO);
                 }
+                break;
+            }
             case PlayState.GAME_OVER:
+            {
+                if (
+                    tapToContinueRenderer.gameObject.activeSelf
+                    && tapToContinueRenderer.color.a >= 0.99f
+                    && Input.anyKey
+                )
                 {
-                    if (tapToContinueRenderer.gameObject.activeSelf && tapToContinueRenderer.color.a >= 0.99f && Input.anyKey)
-                    {
-                        AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.Button);
-                        GameController.instance.level = currLevel;
-                        GameController.instance.ChangeState(GameState.PLAY);
-                    }
-                    break;
+                    AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.Button);
+                    GameController.instance.level = currLevel;
+                    GameController.instance.ChangeState(GameState.PLAY);
                 }
+                break;
+            }
         }
 
         UpdateArrow();
@@ -240,7 +287,8 @@ public class PlayController : MonoBehaviour
 
     private void UpdateArrow()
     {
-        ArrowState nextArrowState = state == PlayState.GAMEPLAY ? GetClosestUFO() : ArrowState.HIDDEN;
+        ArrowState nextArrowState =
+            state == PlayState.GAMEPLAY ? GetClosestUFO() : ArrowState.HIDDEN;
 
         if (currArrowState != nextArrowState)
         {
@@ -248,7 +296,7 @@ public class PlayController : MonoBehaviour
                 leftUFOArrow.gameObject.SetActive(false);
             else
                 rightUFOArrow.gameObject.SetActive(false);
-            
+
             if (nextArrowState == ArrowState.LEFT_UFO)
                 leftUFOArrow.gameObject.SetActive(true);
             else if (nextArrowState == ArrowState.RIGHT_UFO)
@@ -256,10 +304,16 @@ public class PlayController : MonoBehaviour
             currArrowState = nextArrowState;
         }
 
-        if (currArrowState != ArrowState.HIDDEN && Time.fixedTime - lastArrowUpdateTime > ufoArrowBlinkRate)
+        if (
+            currArrowState != ArrowState.HIDDEN
+            && Time.fixedTime - lastArrowUpdateTime > ufoArrowBlinkRate
+        )
         {
-            SpriteRenderer arrowSpriteRenderer = currArrowState == ArrowState.LEFT_UFO ? leftUFOArrow : rightUFOArrow;
-            arrowSpriteRenderer.sprite = ufoArrowSprites[arrowSpriteRenderer.sprite.name == ufoArrowSprites[0].name ? 1 : 0];
+            SpriteRenderer arrowSpriteRenderer =
+                currArrowState == ArrowState.LEFT_UFO ? leftUFOArrow : rightUFOArrow;
+            arrowSpriteRenderer.sprite = ufoArrowSprites[
+                arrowSpriteRenderer.sprite.name == ufoArrowSprites[0].name ? 1 : 0
+            ];
             lastArrowUpdateTime = Time.fixedTime;
         }
     }
@@ -301,17 +355,33 @@ public class PlayController : MonoBehaviour
         }
         LevelData.UFOData ufoData = levelDatas[currLevel].ufoList[ufoNum];
 
-        GameObject backgroundUFO = Instantiate(backgroundUFOObject, new Vector3(0, ufoData.startingBackgroundYPos), Quaternion.identity, backgroundObjectsParent);
-        BackgroundUFOController backgroundUFOController = backgroundUFO.GetComponent<BackgroundUFOController>();
+        GameObject backgroundUFO = Instantiate(
+            backgroundUFOObject,
+            new Vector3(0, ufoData.startingBackgroundYPos),
+            Quaternion.identity,
+            backgroundObjectsParent
+        );
+        BackgroundUFOController backgroundUFOController =
+            backgroundUFO.GetComponent<BackgroundUFOController>();
         backgroundUFOController.mapCellLocation = ufoData.startingCell;
 
-        float initXPos = ParallaxController.instance.GetInitXPos(backgroundUFOController.mapCellLocation, backgroundUFOController.parallaxDistance);
+        float initXPos = ParallaxController.instance.GetInitXPos(
+            backgroundUFOController.mapCellLocation,
+            backgroundUFOController.parallaxDistance
+        );
         // Want to make sure all UFOs are on screen, so readjust the bounds
-        float parallaxDistBounds = (Constants.PIXELS_PER_UNIT * (ParallaxController.instance.GetMapSize() / 2)) / Mathf.Pow(2, backgroundUFOController.parallaxDistance);
-        while (initXPos > parallaxDistBounds) initXPos -= parallaxDistBounds * 2;
-        while (initXPos < -parallaxDistBounds) initXPos += parallaxDistBounds * 2;
+        float parallaxDistBounds =
+            (Constants.PIXELS_PER_UNIT * (ParallaxController.instance.GetMapSize() / 2))
+            / Mathf.Pow(2, backgroundUFOController.parallaxDistance);
+        while (initXPos > parallaxDistBounds)
+            initXPos -= parallaxDistBounds * 2;
+        while (initXPos < -parallaxDistBounds)
+            initXPos += parallaxDistBounds * 2;
         initXPos *= (Constants.SCREEN_BOUNDS + 0.75f) / parallaxDistBounds;
-        backgroundUFO.transform.position = new Vector2(initXPos, backgroundUFO.transform.position.y);
+        backgroundUFO.transform.position = new Vector2(
+            initXPos,
+            backgroundUFO.transform.position.y
+        );
 
         backgroundUFOs[ufoNum] = backgroundUFOController;
         ParallaxController.instance.RegisterNewParallaxObj(backgroundUFOController);
@@ -344,9 +414,17 @@ public class PlayController : MonoBehaviour
 
         GameObject ufo = Instantiate(ufoPrefab, sceneObjectsParent);
         UFOController ufoController = ufo.GetComponent<UFOController>();
-        int[] movementBounds = ufoData.moving ? new int[2]{ufoData.movementCellA, ufoData.movementCellB} : null;
+        int[] movementBounds = ufoData.moving
+            ? new int[2] { ufoData.movementCellA, ufoData.movementCellB }
+            : null;
         ufoController.Init(ufoData.startingCell, movementBounds);
-        ufo.transform.position = new Vector2(ParallaxController.instance.GetInitXPos(ufoController.mapCellLocation, ufoController.parallaxDistance), ufo.transform.position.y);
+        ufo.transform.position = new Vector2(
+            ParallaxController.instance.GetInitXPos(
+                ufoController.mapCellLocation,
+                ufoController.parallaxDistance
+            ),
+            ufo.transform.position.y
+        );
         ParallaxController.instance.RegisterNewParallaxObj(ufoController);
         spawnedUFOs[ufoNum] = ufoController;
 

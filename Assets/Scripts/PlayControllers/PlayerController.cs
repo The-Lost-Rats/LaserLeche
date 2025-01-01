@@ -7,8 +7,10 @@ public class PlayerController : MonoBehaviour
     [Header("References")]
     [SerializeField]
     private GameObject playerHeart;
+
     [SerializeField]
     private LaserController laserController;
+
     [SerializeField]
     private LayerMask groundLayer;
 
@@ -16,6 +18,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     [Range(0.0f, 1.0f)]
     private float playerSpeedScalar;
+
     [Range(1, 20)]
     [SerializeField]
     private float jumpForce;
@@ -24,14 +27,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     [Range(0.01f, 5.0f)]
     private float invulnerabilityLength = 0.01f;
+
     [SerializeField]
     [Range(0.01f, 2.0f)]
     private float invulnerabilityBlinkLength = 0.01f;
+
     [SerializeField]
     [Range(0.01f, 2.0f)]
     private float explodeWait = 0.01f;
+
     [SerializeField]
     private List<Material> spriteMaterials;
+
     [SerializeField]
     private List<Sprite> heartSprites;
 
@@ -65,7 +72,10 @@ public class PlayerController : MonoBehaviour
         if (PlayController.instance.IsGameOver())
         {
             PlayerVelX = 0;
-            if (Time.fixedTime - lastInvulnerabilityBlinkTime > invulnerabilityBlinkLength && !invulnerabilityMaterialWhite)
+            if (
+                Time.fixedTime - lastInvulnerabilityBlinkTime > invulnerabilityBlinkLength
+                && !invulnerabilityMaterialWhite
+            )
             {
                 SetMaterial(spriteMaterials[0]);
                 invulnerabilityMaterialWhite = true;
@@ -99,11 +109,13 @@ public class PlayerController : MonoBehaviour
     private void Move()
     {
         PlayerVelX = Input.GetAxisRaw("Horizontal") * playerSpeedScalar;
-        if (PlayerVelX > 0 && transform.localScale.x < 0) {
+        if (PlayerVelX > 0 && transform.localScale.x < 0)
+        {
             transform.localScale = new Vector3(1, 1, 1);
             playerHeart.transform.localScale = new Vector3(1, 1, 1);
         }
-        else if (PlayerVelX < 0 && transform.localScale.x > 0) {
+        else if (PlayerVelX < 0 && transform.localScale.x > 0)
+        {
             transform.localScale = new Vector3(-1, 1, 1);
             playerHeart.transform.localScale = new Vector3(-1, 1, 1);
         }
@@ -113,7 +125,8 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetAxisRaw("Vertical") > 0)
         {
-            if (IsOnGround()) {
+            if (IsOnGround())
+            {
                 rb2d.linearVelocity = new Vector2(0, jumpForce);
                 if (!AudioController.Instance.OneShotAudioPlaying(SoundEffectKeys.Jump))
                     AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.Jump);
@@ -121,7 +134,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private bool IsOnGround() {
+    private bool IsOnGround()
+    {
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 2.8f, groundLayer);
         return hit.collider != null;
     }
@@ -134,7 +148,9 @@ public class PlayerController : MonoBehaviour
             {
                 if (!updatedHeartUI && animator.GetCurrentAnimatorStateInfo(1).IsName("UIHeart_On"))
                 {
-                    playerHeart.GetComponent<SpriteRenderer>().sprite = heartSprites[MAX_PLAYER_HEALTH - playerHealth];
+                    playerHeart.GetComponent<SpriteRenderer>().sprite = heartSprites[
+                        MAX_PLAYER_HEALTH - playerHealth
+                    ];
                     updatedHeartUI = true;
                 }
                 if (Time.fixedTime - lastInvulnerabilityBlinkTime > invulnerabilityBlinkLength)

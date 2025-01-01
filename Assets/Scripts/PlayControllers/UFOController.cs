@@ -11,12 +11,13 @@ public class UFOController : ParallaxObject
         IDLE = 1,
         LASER = 2,
         DEATH = 3,
-        DEAD = 4
+        DEAD = 4,
     }
 
     [Header("References")]
     [SerializeField]
     private LayerMask playerLayer;
+
     [SerializeField]
     private GameObject ufoLaser;
 
@@ -24,13 +25,15 @@ public class UFOController : ParallaxObject
     [SerializeField]
     [Range(0.01f, 5.0f)]
     private float invulnerabilityLength = 0.01f;
+
     [SerializeField]
     [Range(1, 10)]
     private int ufoMaxHealth = 1;
+
     [SerializeField]
     [Range(0.01f, 5.0f)]
     private float shouldDoSomethingTimer = 0.01f;
-    
+
     [Header("Entering State Variables")]
     [SerializeField]
     [Range(0.01f, 5.0f)]
@@ -40,12 +43,15 @@ public class UFOController : ParallaxObject
     [SerializeField]
     [Range(0, 5)]
     private int floatAmplitude;
+
     [SerializeField]
     [Range(0.0f, 5.0f)]
     private float floatSpeed;
+
     [SerializeField]
     [Range(0.01f, 1.0f)]
     private float movementSpeed = 0.01f;
+
     [SerializeField]
     [Range(0.0f, 5.0f)]
     private float movementHoverTime;
@@ -54,6 +60,7 @@ public class UFOController : ParallaxObject
     [SerializeField]
     [Range(0.01f, 5.0f)]
     private float laserTime = 0.01f;
+
     [SerializeField]
     [Range(0.0f, 5.0f)]
     private float laserCooldownTime = 0.0f;
@@ -62,9 +69,11 @@ public class UFOController : ParallaxObject
     [SerializeField]
     [Range(0.0f, 5.0f)]
     private float deathLength;
+
     [SerializeField]
     [Range(0.0f, 5.0f)]
     private float deathSpeed;
+
     [SerializeField]
     [Range(1, 10)]
     private int deathFadeFrames = 1;
@@ -78,12 +87,14 @@ public class UFOController : ParallaxObject
 
     private bool canMove;
     private int[] movementBounds;
+
     private enum UFOMovementState
     {
         MOVING_TO_A,
         MOVING_TO_B,
-        HOVERING
+        HOVERING,
     }
+
     private UFOMovementState movementState;
     private UFOMovementState lastMovementState;
     private float hoverStateStartTime;
@@ -117,14 +128,19 @@ public class UFOController : ParallaxObject
 
     protected void Update()
     {
-        if (!initialized || PlayController.instance.IsGameOver()) return;
+        if (!initialized || PlayController.instance.IsGameOver())
+            return;
         switch (ufoState)
         {
             case UFOState.ENTERING:
             {
                 if (Time.time - stateStartTime <= enterLength)
                 {
-                    float newY = ((12.25f - initYPos) * Mathf.Pow(1 - ((Time.time - stateStartTime) / enterLength), 3)) + initYPos;
+                    float newY =
+                        (
+                            (12.25f - initYPos)
+                            * Mathf.Pow(1 - ((Time.time - stateStartTime) / enterLength), 3)
+                        ) + initYPos;
                     SetYPosition(newY);
                 }
                 else
@@ -135,7 +151,13 @@ public class UFOController : ParallaxObject
             }
             case UFOState.IDLE:
             {
-                float newY = initYPos + (Mathf.Sin((Time.time - stateStartTime) * floatSpeed) * (floatAmplitude / 8.0f)) - (floatAmplitude % 2 == 0 ? 0.0f : 0.125f);
+                float newY =
+                    initYPos
+                    + (
+                        Mathf.Sin((Time.time - stateStartTime) * floatSpeed)
+                        * (floatAmplitude / 8.0f)
+                    )
+                    - (floatAmplitude % 2 == 0 ? 0.0f : 0.125f);
                 SetYPosition(newY);
                 if (canMove)
                 {
@@ -143,7 +165,12 @@ public class UFOController : ParallaxObject
                     {
                         case UFOMovementState.MOVING_TO_A:
                         case UFOMovementState.MOVING_TO_B:
-                            if (GetCurrMapCell() == movementBounds[movementState == UFOMovementState.MOVING_TO_A ? 0 : 1])
+                            if (
+                                GetCurrMapCell()
+                                == movementBounds[
+                                    movementState == UFOMovementState.MOVING_TO_A ? 0 : 1
+                                ]
+                            )
                             {
                                 UpdateMovementState(false);
                             }
@@ -178,7 +205,12 @@ public class UFOController : ParallaxObject
                     int fadeFrame = (int)Mathf.Floor(deltaTime / (deathLength / deathFadeFrames));
                     if (fadeFrame > lastDeathFadeFrame)
                     {
-                        Color newColor = new Color(1, 1, 1, (deathFadeFrames - fadeFrame) / (float)deathFadeFrames);
+                        Color newColor = new Color(
+                            1,
+                            1,
+                            1,
+                            (deathFadeFrames - fadeFrame) / (float)deathFadeFrames
+                        );
                         renderer.color = newColor;
                         lastDeathFadeFrame = fadeFrame;
                     }
@@ -193,14 +225,16 @@ public class UFOController : ParallaxObject
         animator.SetInteger("UFOState", (int)ufoState);
     }
 
-    private bool SetState(UFOState newState, bool ignoreSameCheck=false)
+    private bool SetState(UFOState newState, bool ignoreSameCheck = false)
     {
         // Check if can enter into new state
-        if (!ignoreSameCheck && ufoState == newState) return false;
+        if (!ignoreSameCheck && ufoState == newState)
+            return false;
         switch (newState)
         {
             case UFOState.LASER:
-                if (lastLaserTime >= 0 && Time.time - lastLaserTime <= laserCooldownTime) return false;
+                if (lastLaserTime >= 0 && Time.time - lastLaserTime <= laserCooldownTime)
+                    return false;
                 break;
         }
 
@@ -217,7 +251,8 @@ public class UFOController : ParallaxObject
                 }
                 break;
             case UFOState.LASER:
-                if (laserSoundEffectId >= 0) AudioController.Instance.StopOneShotAudio(laserSoundEffectId);
+                if (laserSoundEffectId >= 0)
+                    AudioController.Instance.StopOneShotAudio(laserSoundEffectId);
                 laserSoundEffectId = -1;
                 ufoLaser.SetActive(false);
                 lastLaserTime = Time.time;
@@ -236,7 +271,10 @@ public class UFOController : ParallaxObject
                     UpdateMovementState(true);
                 break;
             case UFOState.LASER:
-                if (Mathf.Abs(transform.position.x) <= Constants.SCREEN_BOUNDS) laserSoundEffectId = AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.UFOBeam);
+                if (Mathf.Abs(transform.position.x) <= Constants.SCREEN_BOUNDS)
+                    laserSoundEffectId = AudioController.Instance.PlayOneShotAudio(
+                        SoundEffectKeys.UFOBeam
+                    );
                 ufoLaser.SetActive(true);
                 break;
             case UFOState.DEATH:
@@ -248,16 +286,24 @@ public class UFOController : ParallaxObject
 
     private void UpdateMovementState(bool move)
     {
-        if (!canMove) return;
+        if (!canMove)
+            return;
 
         if (move)
         {
             // TODO Maybe try to move away from the player?
             if (lastMovementState == UFOMovementState.MOVING_TO_A)
-                movementState = GetCurrMapCell() != movementBounds[0] ? UFOMovementState.MOVING_TO_A : UFOMovementState.MOVING_TO_B;
+                movementState =
+                    GetCurrMapCell() != movementBounds[0]
+                        ? UFOMovementState.MOVING_TO_A
+                        : UFOMovementState.MOVING_TO_B;
             else
-                movementState = GetCurrMapCell() != movementBounds[1] ? UFOMovementState.MOVING_TO_B : UFOMovementState.MOVING_TO_A;
-            relativeSpeed = movementState == UFOMovementState.MOVING_TO_A ? -movementSpeed : movementSpeed;
+                movementState =
+                    GetCurrMapCell() != movementBounds[1]
+                        ? UFOMovementState.MOVING_TO_B
+                        : UFOMovementState.MOVING_TO_A;
+            relativeSpeed =
+                movementState == UFOMovementState.MOVING_TO_A ? -movementSpeed : movementSpeed;
             lastMovementState = UFOMovementState.HOVERING;
         }
         else
@@ -271,16 +317,23 @@ public class UFOController : ParallaxObject
 
     private void CheckShouldDoSomething()
     {
-        RaycastHit2D playerHit = Physics2D.Raycast(transform.position, Vector2.down, 20.0f, playerLayer);
+        RaycastHit2D playerHit = Physics2D.Raycast(
+            transform.position,
+            Vector2.down,
+            20.0f,
+            playerLayer
+        );
         if (playerHit.collider != null)
         {
-            if (SetState(UFOState.LASER)) return;
+            if (SetState(UFOState.LASER))
+                return;
         }
 
         if (Time.time - stateStartTime > shouldDoSomethingTimer)
         {
             // Do something
-            if (SetState(UFOState.LASER)) return;
+            if (SetState(UFOState.LASER))
+                return;
         }
     }
 

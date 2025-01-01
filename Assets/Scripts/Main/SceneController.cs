@@ -2,23 +2,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public static class Scenes {
+public static class Scenes
+{
     public const string Base = "BaseScene";
     public const string Intro = "IntroScene";
     public const string Play = "PlayScene";
 }
 
-public class SceneController : MonoBehaviour {
-    private IDictionary<string, GameState> gameSceneStateMapping = new Dictionary<string, GameState>() {
-        {Scenes.Intro, GameState.INTRO},
-        {Scenes.Play, GameState.PLAY}
+public class SceneController : MonoBehaviour
+{
+    private IDictionary<string, GameState> gameSceneStateMapping = new Dictionary<
+        string,
+        GameState
+    >()
+    {
+        { Scenes.Intro, GameState.INTRO },
+        { Scenes.Play, GameState.PLAY },
     };
 
     public static SceneController instance = null;
 
     public List<string> activeScenes { get; private set; }
 
-    public void Initialize() {
+    public void Initialize()
+    {
         activeScenes = new List<string>();
         for (int i = 0; i < SceneManager.sceneCount; i++)
         {
@@ -27,19 +34,24 @@ public class SceneController : MonoBehaviour {
         }
     }
 
-    public List<string> GetActiveScenes() {
+    public List<string> GetActiveScenes()
+    {
         return activeScenes.GetRange(1, activeScenes.Count - 1);
     }
 
-    public void UnloadScene(string sceneName) {
+    public void UnloadScene(string sceneName)
+    {
         SceneManager.UnloadSceneAsync(sceneName);
     }
 
-    public void LoadScene(string sceneName, bool async=true) {
-        if (async) {
+    public void LoadScene(string sceneName, bool async = true)
+    {
+        if (async)
+        {
             SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
         }
-        else {
+        else
+        {
             SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
         }
     }

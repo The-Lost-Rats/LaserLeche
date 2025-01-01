@@ -1,29 +1,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GameState {
+public enum GameState
+{
     UNKNOWN,
     INTRO,
-    PLAY
+    PLAY,
 }
 
-public class GameController : MonoBehaviour {
+public class GameController : MonoBehaviour
+{
     public static GameController instance = null;
 
     // HEH HEH THIS IS SO MESSY BUT I HAVE 3 HOURS AND IT'S 1 AM AND I DON'T CARE ANYMORE
     public int level = 0;
     public bool gameWon = false;
 
-    [SerializeField] private SceneController sceneController;
+    [SerializeField]
+    private SceneController sceneController;
 
     public GameState currGameState { get; private set; }
 
-    public void Awake() {
-        if ( null == instance ) {
+    public void Awake()
+    {
+        if (null == instance)
+        {
             instance = this;
-            DontDestroyOnLoad( this.gameObject );
-        } else {
-            Destroy( this.gameObject );
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(this.gameObject);
         }
 
         // Initialize the scene controller
