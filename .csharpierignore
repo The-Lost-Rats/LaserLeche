@@ -1,0 +1,5 @@
+// Ignore everything by default
+*
+
+// Format only scripts
+!Assets/Scripts

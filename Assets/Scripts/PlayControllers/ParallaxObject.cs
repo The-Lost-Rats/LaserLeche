@@ -9,11 +9,14 @@ public class ParallaxObject : MonoBehaviour
         TWO = 2,
         THREE = 3,
         SEVEN = 7,
-        FIFTEEN = 15
+        FIFTEEN = 15,
     }
 
     public ParallaxDistance parallaxDistanceEnum;
-    public int parallaxDistance { get { return (int)parallaxDistanceEnum; } }
+    public int parallaxDistance
+    {
+        get { return (int)parallaxDistanceEnum; }
+    }
     public int mapCellLocation;
     public bool looping;
 
@@ -38,7 +41,9 @@ public class ParallaxObject : MonoBehaviour
         }
         else
         {
-            int parallaxBounds = ParallaxController.instance.GetScreenBoundsForDistance(parallaxDistance);
+            int parallaxBounds = ParallaxController.instance.GetScreenBoundsForDistance(
+                parallaxDistance
+            );
             int screenBounds = Constants.SCREEN_BOUNDS + (int)Mathf.Ceil(renderer.size.x / 2);
             realLoop = parallaxBounds > screenBounds;
             objBounds = realLoop ? parallaxBounds : screenBounds;
@@ -49,7 +54,7 @@ public class ParallaxObject : MonoBehaviour
         initialized = true;
     }
 
-    protected virtual void OnStart() {}
+    protected virtual void OnStart() { }
 
     protected void SetYPosition(float y)
     {
@@ -60,7 +65,8 @@ public class ParallaxObject : MonoBehaviour
 
     public void Move(float xDiff)
     {
-        if (!initialized) return;
+        if (!initialized)
+            return;
 
         Vector2 pos = transform.position;
         pos.x -= (xDiff - relativeSpeed) / Mathf.Pow(2, parallaxDistance);

@@ -63,6 +63,9 @@ public class LaserController : MonoBehaviour
 
     private void PlayLaserSoundEffect()
     {
-        laserSoundEffectId = AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.LecheLaser, true);
+        laserSoundEffectId = AudioController.Instance.PlayOneShotAudio(
+            SoundEffectKeys.LecheLaser,
+            true
+        );
     }
 }

@@ -9,7 +9,7 @@ public class BackgroundUFOController : ParallaxObject
         ENTERING,
         IDLE,
         DESCENDING,
-        DESCENDED
+        DESCENDED,
     }
 
     [Header("Entering State Variables")]
@@ -21,6 +21,7 @@ public class BackgroundUFOController : ParallaxObject
     [SerializeField]
     [Range(0, 5)]
     private int floatAmplitude;
+
     [SerializeField]
     [Range(0.0f, 5.0f)]
     private float floatSpeed;
@@ -69,7 +70,11 @@ public class BackgroundUFOController : ParallaxObject
             {
                 if (Time.time - stateStartTime <= enterLength)
                 {
-                    float newY = ((12.25f - initYPos) * Mathf.Pow(1 - ((Time.time - stateStartTime) / enterLength), 3)) + initYPos;
+                    float newY =
+                        (
+                            (12.25f - initYPos)
+                            * Mathf.Pow(1 - ((Time.time - stateStartTime) / enterLength), 3)
+                        ) + initYPos;
                     SetYPosition(newY);
                 }
                 else
@@ -81,7 +86,13 @@ public class BackgroundUFOController : ParallaxObject
             }
             case BackgroundUFOState.IDLE:
             {
-                float newY = initYPos + (Mathf.Sin((Time.time - stateStartTime) * floatSpeed) * (floatAmplitude / 8.0f)) - (floatAmplitude % 2 == 0 ? 0.0f : 0.125f);
+                float newY =
+                    initYPos
+                    + (
+                        Mathf.Sin((Time.time - stateStartTime) * floatSpeed)
+                        * (floatAmplitude / 8.0f)
+                    )
+                    - (floatAmplitude % 2 == 0 ? 0.0f : 0.125f);
                 SetYPosition(newY);
                 break;
             }
