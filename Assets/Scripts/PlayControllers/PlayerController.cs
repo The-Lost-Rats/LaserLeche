@@ -209,7 +209,7 @@ public class PlayerController : MonoBehaviour
         playerHealth = Mathf.Clamp(playerHealth + healthValue, 0, MAX_PLAYER_HEALTH);
 
         // Set player invincible for a short time (to update UI)
-        // TODO: maybe this shouldn't be tied to the UI
+        // TODO: maybe this shouldn't be optional
         invulnerable = true;
         updatedHeartUI = false;
         SetMaterial(spriteMaterials[1]);
