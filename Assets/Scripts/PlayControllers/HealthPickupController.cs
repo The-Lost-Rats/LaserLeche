@@ -36,6 +36,9 @@ public class HealthPickupController : ParallaxObject
     // If pickup has been picked up
     private bool isUsed;
 
+    // Starting y position of pickup
+    private float startingYPos;
+
 
     /** Initialize values and animation
      */
@@ -44,13 +47,21 @@ public class HealthPickupController : ParallaxObject
         // Set isUsed to false (we haven't picked this guy up yet!)
         isUsed = false;
 
+        // Set starting y position
+        startingYPos = transform.position.y;
+
         // TODO: trigger DoTween Animation
     }
 
     // TODO: delete this when dotween comes in
     protected void Update()
     {
-        float y = Mathf.PingPong(Time.time * speed, 1) * 2 - 6;
+        // Get value between 0 and 1 over time (follows triangle wave)
+        // Multiply value by 2 so range is 0 to 2
+        // Add starting y poition so it is offset by start position
+        // E.g. the pickup will ping pong from starting y position to 2 +
+        // starting y position
+        float y = Mathf.PingPong(Time.time * speed, 1) * 2 + startingYPos;
         transform.position = new Vector2(transform.position.x, y);
     }
 
