@@ -91,19 +91,30 @@ public class HealthPickupController : ParallaxObject
      */
     private void CheckCollision(Collider2D other)
     {
-        // If player - update health and die
+        // If player touched pickup
+        // AND player is not at full health
+        // Update player health and destroy self
         if (other.gameObject.CompareTag("Player"))
         {
-            Debug.Log("Player picked up health pickup!");
+            Debug.Log("Player touched health pickup!");
 
-            // Set isUsed to true
-            isUsed = true;
+            // Get player controller
+            PlayerController playerController = other.gameObject.GetComponent<PlayerController>();
 
-            // Update player health
-            other.gameObject.GetComponent<PlayerController>().UpdateHealth(healthToRestore);
+            // Check if player is not at full health
+            if (!playerController.IsPlayerFullHealth())
+            {
+                Debug.Log("Player picked up health pickup!");
 
-            // Destroy self
-            Die();
+                // Set isUsed to true
+                isUsed = true;
+
+                // Update player health
+                playerController.UpdateHealth(healthToRestore);
+
+                // Destroy self
+                Die();
+            }
         }
 
     }

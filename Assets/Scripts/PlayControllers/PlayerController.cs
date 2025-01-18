@@ -201,7 +201,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void UpdateHealth(int healthValue)
+    public void UpdateHealth(int healthValue, bool setInvulnerable = true)
     {
         // Update player health
         // TODO: one day we could make this iterate and do increment or
@@ -226,5 +226,13 @@ public class PlayerController : MonoBehaviour
     private void TurnOffInvulnerability()
     {
         invulnerable = false;
+    }
+
+    /** Return true if player health is full
+     * (e.g. equal to max health)
+     */
+    public bool IsPlayerFullHealth()
+    {
+        return (playerHealth == MAX_PLAYER_HEALTH);
     }
 }
