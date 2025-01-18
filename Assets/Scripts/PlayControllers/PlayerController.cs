@@ -201,6 +201,28 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void UpdateHealth(int healthValue)
+    {
+        // Update player health
+        // TODO: one day we could make this iterate and do increment or
+        // decrement one at a time - eh not sure how i feel about it
+        playerHealth = Mathf.Clamp(playerHealth + healthValue, 0, MAX_PLAYER_HEALTH);
+
+        // Set player invincible for a short time (to update UI)
+        // TODO: maybe this shouldn't be tied to the UI
+        invulnerable = true;
+        updatedHeartUI = false;
+        SetMaterial(spriteMaterials[1]);
+        lastInvulnerabilityBlinkTime = Time.fixedTime;
+        invulnerabilityMaterialWhite = false;
+
+        // Show player heart UI
+        playerHeart.SetActive(true);
+
+        // Turn off invulnerability at some point
+        Invoke("TurnOffInvulnerability", invulnerabilityLength);
+    }
+
     private void TurnOffInvulnerability()
     {
         invulnerable = false;
