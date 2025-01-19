@@ -110,7 +110,7 @@ public class HealthPickupController : ParallaxObject
                 isUsed = true;
 
                 // Update player health
-                playerController.UpdateHealth(healthToRestore);
+                playerController.UpdateHealth(healthToRestore, false);
 
                 // Destroy self
                 Die();
