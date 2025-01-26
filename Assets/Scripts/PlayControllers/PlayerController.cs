@@ -68,6 +68,7 @@ public class PlayerController : MonoBehaviour
 
         // Set health UI to disabled on start
         playerHeart.SetActive(false);
+        animator.SetBool("PlayerUpdateUI", false);
     }
 
     protected void FixedUpdate()
@@ -104,6 +105,7 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("PlayerVelY", PlayerVelY);
         animator.SetBool("PlayerInvulnerable", invulnerable);
         animator.SetBool("PlayerDead", playerHealth == 0);
+        animator.SetBool("PlayerUpdateUI", updatedHeartUI);
     }
 
     private void Move()
@@ -147,10 +149,19 @@ public class PlayerController : MonoBehaviour
             //***********************
 
             // If we haven't updated the heart UI, update it
+            // TODO: figure out better separation here. we want the intro
+            // animation to play BEFORE we update the health and then we
+            // want to fade out before we stop showing the heart UI
             if (!updatedHeartUI)
             {
                 playerHeart.GetComponent<SpriteRenderer>().sprite = heartSprites[MAX_PLAYER_HEALTH - playerHealth];
-                updatedHeartUI = true;
+            }
+
+            // Otherwise if we have updated the UI and it is back in Idle
+            // state, stop showing the heart
+            else if (updatedHeartUI && animator.GetCurrentAnimatorStateInfo(1).IsName("UIHeart_Idle"))
+            {
+                playerHeart.SetActive(false);
             }
 
 
@@ -266,7 +277,7 @@ public class PlayerController : MonoBehaviour
     */
     private void TurnOffHealthUI()
     {
-        playerHeart.SetActive(false);
+        updatedHeartUI = true;
     }
 
     /** Return true if player health is full
