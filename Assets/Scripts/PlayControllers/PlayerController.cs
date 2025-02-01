@@ -32,8 +32,15 @@ public class PlayerController : MonoBehaviour
     private float explodeWait = 0.01f;
     [SerializeField]
     private List<Material> spriteMaterials;
+
+    [Header("UI Variables")]
     [SerializeField]
     private List<Sprite> heartSprites;
+
+    // Time for UI to be active after updating
+    [SerializeField]
+    [Range(0.01f, 5.0f)]
+    private float activeHeartUIDuration;
 
     public float PlayerVelX { get; private set; }
     public float PlayerVelY { get; private set; }
@@ -58,6 +65,10 @@ public class PlayerController : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         PlayerVelX = 0.0f;
         playerHealth = MAX_PLAYER_HEALTH;
+
+        // Set health UI to disabled on start
+        playerHeart.SetActive(false);
+        animator.SetBool("PlayerUpdateUI", false);
     }
 
     protected void FixedUpdate()
@@ -94,6 +105,7 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("PlayerVelY", PlayerVelY);
         animator.SetBool("PlayerInvulnerable", invulnerable);
         animator.SetBool("PlayerDead", playerHealth == 0);
+        animator.SetBool("PlayerUpdateUI", updatedHeartUI);
     }
 
     private void Move()
@@ -126,34 +138,58 @@ public class PlayerController : MonoBehaviour
         return hit.collider != null;
     }
 
+    // TODO: maybe attempt to decouple damage and UI?
     private void DamageUpdate()
     {
+        // If player is alive
         if (playerHealth > 0)
         {
-            if (invulnerable)
+            //***********************
+            // UI Update
+            //***********************
+
+            // If we haven't updated the heart UI, update it
+            // TODO: figure out better separation here. we want the intro
+            // animation to play BEFORE we update the health and then we
+            // want to fade out before we stop showing the heart UI
+            if (!updatedHeartUI)
             {
-                if (!updatedHeartUI && animator.GetCurrentAnimatorStateInfo(1).IsName("UIHeart_On"))
-                {
-                    playerHeart.GetComponent<SpriteRenderer>().sprite = heartSprites[MAX_PLAYER_HEALTH - playerHealth];
-                    updatedHeartUI = true;
-                }
-                if (Time.fixedTime - lastInvulnerabilityBlinkTime > invulnerabilityBlinkLength)
-                {
-                    SetMaterial(spriteMaterials[invulnerabilityMaterialWhite ? 1 : 0]);
-                    invulnerabilityMaterialWhite = !invulnerabilityMaterialWhite;
-                    lastInvulnerabilityBlinkTime = Time.fixedTime;
-                }
+                playerHeart.GetComponent<SpriteRenderer>().sprite = heartSprites[MAX_PLAYER_HEALTH - playerHealth];
             }
-            else if (playerHeart.activeSelf)
+
+            // Otherwise if we have updated the UI and it is back in Idle
+            // state, stop showing the heart
+            else if (updatedHeartUI && animator.GetCurrentAnimatorStateInfo(1).IsName("UIHeart_Idle"))
             {
-                if (animator.GetCurrentAnimatorStateInfo(1).IsName("UIHeart_Idle"))
-                    playerHeart.SetActive(false);
+                playerHeart.SetActive(false);
+            }
+
+
+            //************************
+            // Invulnerability logic
+            //************************
+
+            // If we are invulnerable and it is time to flash, flash
+            if (invulnerable && Time.fixedTime - lastInvulnerabilityBlinkTime > invulnerabilityBlinkLength)
+            {
+                SetMaterial(spriteMaterials[invulnerabilityMaterialWhite ? 1 : 0]);
+                invulnerabilityMaterialWhite = !invulnerabilityMaterialWhite;
+                lastInvulnerabilityBlinkTime = Time.fixedTime;
+            }
+
+            // If we are not invulnerable, set player sprite to default
+            else if (!invulnerable && invulnerabilityMaterialWhite)
+            {
                 SetMaterial(spriteMaterials[0]);
             }
         }
+
+        // Player is not alive and heart UI is showing - lets hide it
         else if (playerHeart.activeSelf)
         {
             playerHeart.SetActive(false);
+
+            // Also make sure the player sprite it correct
             SetMaterial(spriteMaterials[0]);
         }
     }
@@ -177,19 +213,19 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamage()
     {
-        playerHealth--;
-        invulnerable = true;
-        updatedHeartUI = false;
+        // Decrement health
+        UpdateHealth(-1);
+
+        // Stop firing laser
         laserController.StopFiringLaser();
-        SetMaterial(spriteMaterials[1]);
-        lastInvulnerabilityBlinkTime = Time.fixedTime;
-        invulnerabilityMaterialWhite = false;
+
+        // If player is still alive, play damange sound effect
         if (playerHealth > 0)
         {
             AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.LecheHurt);
-            playerHeart.SetActive(true);
-            Invoke("TurnOffInvulnerability", invulnerabilityLength);
         }
+
+        // Otherwise put up game over screen
         else
         {
             sr.sortingLayerName = "Overlay";
@@ -201,8 +237,54 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void UpdateHealth(int healthValue, bool setInvulnerable = true)
+    {
+        // Update player health
+        // TODO: one day we could make this iterate and do increment or
+        // decrement one at a time - eh not sure how i feel about it
+        playerHealth = Mathf.Clamp(playerHealth + healthValue, 0, MAX_PLAYER_HEALTH);
+
+        // Optionally set player invincible for a short time
+        invulnerable = setInvulnerable;
+        if (setInvulnerable)
+        {
+            lastInvulnerabilityBlinkTime = Time.fixedTime;
+            invulnerabilityMaterialWhite = false;
+
+            // Set initial player sprite to flash white
+            SetMaterial(spriteMaterials[1]);
+
+            // Turn off invulnerability at some point
+            Invoke("TurnOffInvulnerability", invulnerabilityLength);
+        }
+
+        // We need to update heart UI
+        updatedHeartUI = false;
+
+        // Show player heart UI
+        playerHeart.SetActive(true);
+
+        // Set timer to start for UI (now)
+        Invoke("TurnOffHealthUI", activeHeartUIDuration);
+    }
+
     private void TurnOffInvulnerability()
     {
         invulnerable = false;
+    }
+
+    /** Disable Health UI
+    */
+    private void TurnOffHealthUI()
+    {
+        updatedHeartUI = true;
+    }
+
+    /** Return true if player health is full
+     * (e.g. equal to max health)
+     */
+    public bool IsPlayerFullHealth()
+    {
+        return (playerHealth == MAX_PLAYER_HEALTH);
     }
 }

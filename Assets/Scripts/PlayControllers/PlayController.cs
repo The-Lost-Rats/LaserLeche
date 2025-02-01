@@ -34,6 +34,7 @@ public class PlayController : MonoBehaviour
     [SerializeField] private GameObject basicUIText;
     [SerializeField] private GameObject backgroundUFOObject;
     [SerializeField] private GameObject ufoPrefab;
+    [SerializeField] private GameObject healthPickupPrefab;
 
     [Header("State Variables")]
     [SerializeField] [Range(0.1f, 4.0f)] private float startLength = 0.1f;
@@ -97,6 +98,25 @@ public class PlayController : MonoBehaviour
         ufoController.Init(0, new int[2]{95, 5});
         ufo.transform.position = new Vector2(ParallaxController.instance.GetInitXPos(ufoController.mapCellLocation, ufoController.parallaxDistance), ufo.transform.position.y);
         ParallaxController.instance.RegisterNewParallaxObj(ufoController);
+    }
+
+    /** Test function to spawn a health pick in bottom right of screen
+     */
+    [ContextMenu("Test Health Pickup")]
+    private void TestHealthPickup()
+    {
+        Debug.Log("Creating health pickup!");
+
+        // Instantiate game object and get health pickup controller script
+        GameObject healthPickup = Instantiate(healthPickupPrefab, sceneObjectsParent);
+        HealthPickupController healthPickupController = healthPickup.GetComponent<HealthPickupController>();
+
+        // Update transform to be bottom right of screen
+        healthPickup.transform.position = new Vector2(6, -6);
+
+        // Add controller to list of parallax objects (so it will move in
+        // the world)
+        ParallaxController.instance.RegisterNewParallaxObj(healthPickupController);
     }
 
     protected void FixedUpdate()
