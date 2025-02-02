@@ -42,6 +42,9 @@ public class PlayerController : MonoBehaviour
     [Range(0.01f, 5.0f)]
     private float activeHeartUIDuration;
 
+    // Bool for managing animation states of heart UI
+    private bool updateHeartUI;
+
     public float PlayerVelX { get; private set; }
     public float PlayerVelY { get; private set; }
 
@@ -52,7 +55,6 @@ public class PlayerController : MonoBehaviour
     const int MAX_PLAYER_HEALTH = 4;
     private int playerHealth;
     private bool invulnerable;
-    private bool updatedHeartUI;
     private float lastInvulnerabilityBlinkTime;
     private bool invulnerabilityMaterialWhite;
     private float explodeStartTime;
@@ -67,8 +69,10 @@ public class PlayerController : MonoBehaviour
         playerHealth = MAX_PLAYER_HEALTH;
 
         // Set health UI to disabled on start
+        updateHeartUI = false;
+        animator.SetBool("PlayerUpdateUI", updateHeartUI);
+
         playerHeart.SetActive(false);
-        animator.SetBool("PlayerUpdateUI", false);
     }
 
     protected void FixedUpdate()
@@ -105,7 +109,7 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("PlayerVelY", PlayerVelY);
         animator.SetBool("PlayerInvulnerable", invulnerable);
         animator.SetBool("PlayerDead", playerHealth == 0);
-        animator.SetBool("PlayerUpdateUI", updatedHeartUI);
+        animator.SetBool("PlayerUpdateUI", updateHeartUI);
     }
 
     private void Move()
@@ -138,7 +142,6 @@ public class PlayerController : MonoBehaviour
         return hit.collider != null;
     }
 
-    // TODO: maybe attempt to decouple damage and UI?
     private void DamageUpdate()
     {
         // If player is alive
@@ -148,22 +151,26 @@ public class PlayerController : MonoBehaviour
             // UI Update
             //***********************
 
-            // If we haven't updated the heart UI, update it
-            // TODO: figure out better separation here. we want the intro
-            // animation to play BEFORE we update the health and then we
-            // want to fade out before we stop showing the heart UI
-            if (!updatedHeartUI)
+            // TODO: think about invokes and if we can cancel any running
+            // ones before starting new one
+
+            // Only update UI if we are in idle state - if we aren't it
+            // means the heart animations are playing :-)
+            if (updateHeartUI && animator.GetCurrentAnimatorStateInfo(1).IsName("UIHeart_Idle"))
             {
+                // If we need to update the heart UI, update it
                 playerHeart.GetComponent<SpriteRenderer>().sprite = heartSprites[MAX_PLAYER_HEALTH - playerHealth];
+            
+                // Otherwise if we have updated the UI and it is back in Idle
+                // state, stop showing the heart
             }
 
-            // Otherwise if we have updated the UI and it is back in Idle
-            // state, stop showing the heart
-            else if (updatedHeartUI && animator.GetCurrentAnimatorStateInfo(1).IsName("UIHeart_Idle"))
+            // TODO: exit stuff
+            else if (animator.GetBool("PlayerHeartAnimationExited"))
             {
                 playerHeart.SetActive(false);
+                animator.ResetTrigger("PlayerHeartAnimationExited");
             }
-
 
             //************************
             // Invulnerability logic
@@ -259,7 +266,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // We need to update heart UI
-        updatedHeartUI = false;
+        updateHeartUI = true;
 
         // Show player heart UI
         playerHeart.SetActive(true);
@@ -277,7 +284,7 @@ public class PlayerController : MonoBehaviour
     */
     private void TurnOffHealthUI()
     {
-        updatedHeartUI = true;
+        updateHeartUI = false;
     }
 
     /** Return true if player health is full
