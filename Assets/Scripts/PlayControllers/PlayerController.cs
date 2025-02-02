@@ -181,15 +181,9 @@ public class PlayerController : MonoBehaviour
         // UI Update
         //***********************
 
-        // TODO: think about invokes and if we can cancel any running
-        // ones before starting new one
-        
-        // Only update UI if we just started the player heart animation
+        // Only show heart if we just started the player heart animation
         if (animator.GetBool("PlayerHeartAnimationEntered"))
-        {
-            // Update heart sprite
-            playerHeart.GetComponent<SpriteRenderer>().sprite = heartSprites[MAX_PLAYER_HEALTH - playerHealth];
-            
+        { 
             // Show player heart UI
             playerHeart.SetActive(true);
 
@@ -211,6 +205,13 @@ public class PlayerController : MonoBehaviour
 
             // Also make sure the player sprite it correct
             SetMaterial(spriteMaterials[0]);
+        }
+
+
+        if (updateHeartUI)
+        {
+            // Update heart sprite
+            playerHeart.GetComponent<SpriteRenderer>().sprite = heartSprites[MAX_PLAYER_HEALTH - playerHealth];
         }
 
     }
@@ -275,12 +276,18 @@ public class PlayerController : MonoBehaviour
             // Set initial player sprite to flash white
             SetMaterial(spriteMaterials[1]);
 
+            // Cancel all future invokes if any exist
+            CancelInvoke("TurnOffInvulnerability");
+
             // Turn off invulnerability at some point
             Invoke("TurnOffInvulnerability", invulnerabilityLength);
         }
 
         // We need to update heart UI
         updateHeartUI = true;
+
+        // Cancel all future invokes if any exist
+        CancelInvoke("TurnOffHealthUI");
 
         // Set timer to start for UI (now)
         Invoke("TurnOffHealthUI", activeHeartUIDuration);
