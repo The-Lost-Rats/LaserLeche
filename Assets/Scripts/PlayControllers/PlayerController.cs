@@ -238,6 +238,9 @@ public class PlayerController : MonoBehaviour
         // Decrement health
         UpdateHealth(-1);
 
+        // Trigger invulnerability
+        TriggerInvulnerability();
+
         // Stop firing laser
         laserController.StopFiringLaser();
 
@@ -259,29 +262,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void UpdateHealth(int healthValue, bool setInvulnerable = true)
+    public void UpdateHealth(int healthValue)
     {
         // Update player health
         // TODO: one day we could make this iterate and do increment or
         // decrement one at a time - eh not sure how i feel about it
         playerHealth = Mathf.Clamp(playerHealth + healthValue, 0, MAX_PLAYER_HEALTH);
-
-        // Optionally set player invincible for a short time
-        invulnerable = setInvulnerable;
-        if (setInvulnerable)
-        {
-            lastInvulnerabilityBlinkTime = Time.fixedTime;
-            invulnerabilityMaterialWhite = false;
-
-            // Set initial player sprite to flash white
-            SetMaterial(spriteMaterials[1]);
-
-            // Cancel all future invokes if any exist
-            CancelInvoke("TurnOffInvulnerability");
-
-            // Turn off invulnerability at some point
-            Invoke("TurnOffInvulnerability", invulnerabilityLength);
-        }
 
         // We need to update heart UI
         updateHeartUI = true;
@@ -293,7 +279,22 @@ public class PlayerController : MonoBehaviour
         Invoke("TurnOffHealthUI", activeHeartUIDuration);
     }
 
-    // TODO: public void TriggerInvulnerability()
+    public void TriggerInvulnerability()
+    {
+        invulnerable = true;
+        
+        lastInvulnerabilityBlinkTime = Time.fixedTime;
+        invulnerabilityMaterialWhite = false;
+
+        // Set initial player sprite to flash white
+        SetMaterial(spriteMaterials[1]);
+
+        // Cancel all future invokes if any exist
+        CancelInvoke("TurnOffInvulnerability");
+
+        // Turn off invulnerability at some point
+        Invoke("TurnOffInvulnerability", invulnerabilityLength);
+    }
 
     private void TurnOffInvulnerability()
     {
