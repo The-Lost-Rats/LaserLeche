@@ -75,6 +75,12 @@ public class PlayerController : MonoBehaviour
         playerHeart.SetActive(false);
     }
 
+    protected void Update()
+    {
+        // Update Heart UI
+        HeartUIUpdate();
+    }
+
     protected void FixedUpdate()
     {
         if (PlayController.instance.IsGameOver())
@@ -103,12 +109,14 @@ public class PlayerController : MonoBehaviour
         }
         PlayerVelY = rb2d.linearVelocity.y;
 
+        // Check for damage
         DamageUpdate();
 
+        // Set animator values
         animator.SetFloat("PlayerVelXAbs", Mathf.Abs(PlayerVelX));
         animator.SetFloat("PlayerVelY", PlayerVelY);
         animator.SetBool("PlayerInvulnerable", invulnerable);
-        animator.SetBool("PlayerDead", playerHealth == 0);
+        animator.SetBool("PlayerDead", !IsPlayerAlive());
         animator.SetBool("PlayerUpdateUI", updateHeartUI);
     }
 
@@ -145,33 +153,8 @@ public class PlayerController : MonoBehaviour
     private void DamageUpdate()
     {
         // If player is alive
-        if (playerHealth > 0)
+        if (IsPlayerAlive())
         {
-            //***********************
-            // UI Update
-            //***********************
-
-            // TODO: think about invokes and if we can cancel any running
-            // ones before starting new one
-
-            // Only update UI if we are in idle state - if we aren't it
-            // means the heart animations are playing :-)
-            if (updateHeartUI && animator.GetCurrentAnimatorStateInfo(1).IsName("UIHeart_Idle"))
-            {
-                // If we need to update the heart UI, update it
-                playerHeart.GetComponent<SpriteRenderer>().sprite = heartSprites[MAX_PLAYER_HEALTH - playerHealth];
-            
-                // Otherwise if we have updated the UI and it is back in Idle
-                // state, stop showing the heart
-            }
-
-            // TODO: exit stuff
-            else if (animator.GetBool("PlayerHeartAnimationExited"))
-            {
-                playerHeart.SetActive(false);
-                animator.ResetTrigger("PlayerHeartAnimationExited");
-            }
-
             //************************
             // Invulnerability logic
             //************************
@@ -190,15 +173,46 @@ public class PlayerController : MonoBehaviour
                 SetMaterial(spriteMaterials[0]);
             }
         }
+    }
+
+    private void HeartUIUpdate()
+    {
+        //***********************
+        // UI Update
+        //***********************
+
+        // TODO: think about invokes and if we can cancel any running
+        // ones before starting new one
+        
+        // Only update UI if we just started the player heart animation
+        if (animator.GetBool("PlayerHeartAnimationEntered"))
+        {
+            // Update heart sprite
+            playerHeart.GetComponent<SpriteRenderer>().sprite = heartSprites[MAX_PLAYER_HEALTH - playerHealth];
+            
+            // Show player heart UI
+            playerHeart.SetActive(true);
+
+            // Reset trigger for next time
+            animator.ResetTrigger("PlayerHeartAnimationEntered");
+        }
+
+        // If animation is done, stop showing heart
+        else if (animator.GetBool("PlayerHeartAnimationExited"))
+        {
+            playerHeart.SetActive(false);
+            animator.ResetTrigger("PlayerHeartAnimationExited");
+        }
 
         // Player is not alive and heart UI is showing - lets hide it
-        else if (playerHeart.activeSelf)
+        if (!IsPlayerAlive() && playerHeart.activeSelf)
         {
             playerHeart.SetActive(false);
 
             // Also make sure the player sprite it correct
             SetMaterial(spriteMaterials[0]);
         }
+
     }
 
     private void SetMaterial(Material material)
@@ -227,7 +241,7 @@ public class PlayerController : MonoBehaviour
         laserController.StopFiringLaser();
 
         // If player is still alive, play damange sound effect
-        if (playerHealth > 0)
+        if (IsPlayerAlive())
         {
             AudioController.Instance.PlayOneShotAudio(SoundEffectKeys.LecheHurt);
         }
@@ -268,12 +282,11 @@ public class PlayerController : MonoBehaviour
         // We need to update heart UI
         updateHeartUI = true;
 
-        // Show player heart UI
-        playerHeart.SetActive(true);
-
         // Set timer to start for UI (now)
         Invoke("TurnOffHealthUI", activeHeartUIDuration);
     }
+
+    // TODO: public void TriggerInvulnerability()
 
     private void TurnOffInvulnerability()
     {
@@ -293,5 +306,12 @@ public class PlayerController : MonoBehaviour
     public bool IsPlayerFullHealth()
     {
         return (playerHealth == MAX_PLAYER_HEALTH);
+    }
+
+    /** Return true if player is alive
+     */
+    public bool IsPlayerAlive()
+    {
+        return (playerHealth > 0);
     }
 }
